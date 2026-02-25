@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>RISK DESK</title>
+
+<!-- PWA Meta Tags -->
+<meta name="application-name" content="RISK DESK">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RISK DESK">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#07090f">
+<meta name="description" content="Personal Nifty Options Risk Dashboard — Black-Scholes Greeks, Live Prices, Multi-device Sync">
+
+<!-- PWA Manifest (inline as data URI so single-file works) -->
+<link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22RISK+DESK%22%2C%22short_name%22%3A%22RISK+DESK%22%2C%22description%22%3A%22Nifty+Options+Risk+Dashboard%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2307090f%22%2C%22theme_color%22%3A%22%2307090f%22%2C%22orientation%22%3A%22any%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg+xmlns%3D%2527http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%2527+viewBox%3D%270+0+512+512%2527%253E%253Crect+width%3D%2527512%2527+height%3D%2527512%2527+fill%3D%2527%252307090f%2527%2F%253E%253Ctext+x%3D%2527256%2527+y%3D%2527320%2527+font-size%3D%2527240%2527+text-anchor%3D%2527middle%2527+fill%3D%2527%252300c8ff%2527%253E%25E2%25AC%25A1%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any+maskable%22%7D%5D%7D">
+
+<!-- Apple touch icon (inline SVG → PNG-like) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%2307090f'/><text x='256' y='320' font-size='240' text-anchor='middle' fill='%2300c8ff'>⬡</text></svg>">
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#07090f;--bg2:#0c1018;--bg3:#111620;--bg4:#161c28;
+  --border:#1c2535;--border2:#26354f;
+  --accent:#00c8ff;--accent2:#0099cc;
+  --green:#00e676;--green2:#00a854;
+  --red:#ff3b55;--red2:#b01f35;
+  --orange:#ffaa00;--orange2:#c47f00;
+  --purple:#c084fc;--yellow:#ffe566;
+  --text:#dde4f0;--text2:#7e90ab;--text3:#3d5068;
+  --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,200,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;padding:16px 20px;max-width:1720px;margin:0 auto;}
+
+.nav{display:flex;gap:2px;margin-bottom:16px;background:var(--bg2);border:1px solid var(--border);padding:4px;}
+.nav-tab{padding:8px 18px;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text2);cursor:pointer;border:1px solid transparent;transition:all .2s;}
+.nav-tab:hover{color:var(--text);background:var(--bg3);}
+.nav-tab.active{color:var(--accent);background:var(--bg3);border-color:var(--accent2);}
+.page{display:none;}.page.active{display:block;}
+
+.hdr{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--bg2);border:1px solid var(--border);border-bottom:2px solid var(--accent);margin-bottom:14px;position:relative;overflow:hidden;}
+.hdr::before{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:scan 4s linear infinite;}
+@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.hdr-l h1{font-family:var(--mono);font-size:14px;color:var(--accent);letter-spacing:3px;}
+.hdr-l p{font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:1px;}
+.hdr-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s ease-in-out infinite;display:inline-block;margin-right:5px;}
+.live-dot.red{background:var(--red);}
+.live-dot.orange{background:var(--orange);}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.badge{font-family:var(--mono);font-size:9px;padding:4px 9px;letter-spacing:1px;white-space:nowrap;}
+.badge-green{background:rgba(0,230,118,.1);border:1px solid var(--green2);color:var(--green);}
+.badge-orange{background:rgba(255,170,0,.1);border:1px solid var(--orange2);color:var(--orange);}
+.badge-red{background:rgba(255,59,85,.1);border:1px solid var(--red2);color:var(--red);}
+.badge-blue{background:rgba(0,200,255,.1);border:1px solid var(--accent2);color:var(--accent);}
+.badge-gray{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text2);}
+.badge-accent{background:rgba(0,200,255,.1);border:1px solid var(--accent2);color:var(--accent);}
+#clock{font-family:var(--mono);font-size:11px;color:var(--text2);}
+
+.card{background:var(--bg2);border:1px solid var(--border);padding:16px;}
+.card-accent{border-top:2px solid var(--accent);}
+.card-green{border-top:2px solid var(--green);}
+.card-red{border-top:2px solid var(--red);}
+.card-orange{border-top:2px solid var(--orange);}
+.card-purple{border-top:2px solid var(--purple);}
+
+.stitle{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.stitle::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:12px;}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:12px;}
+.mb12{margin-bottom:12px;}.mb8{margin-bottom:8px;}.mt8{margin-top:8px;}.mt6{margin-top:6px;}
+
+.kpi-label{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+.kpi-val{font-family:var(--mono);font-size:26px;font-weight:700;line-height:1;}
+.kpi-sub{font-size:10px;color:var(--text2);margin-top:5px;}
+.kpi-sm{font-size:17px;}.kpi-xs{font-size:13px;}
+.green{color:var(--green);}.red{color:var(--red);}.orange{color:var(--orange);}.accent{color:var(--accent);}.purple{color:var(--purple);}
+
+.tbl{width:100%;border-collapse:collapse;font-size:11px;}
+.tbl th{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--text3);background:var(--bg3);padding:7px 9px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+.tbl td{padding:8px 9px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text2);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:rgba(255,255,255,.02);}
+.tbl .mono{font-family:var(--mono);font-size:10px;}
+.tbl .bold{font-weight:700;color:var(--text);}
+.tbl .total-row td{background:var(--bg3);font-weight:700;color:var(--text);font-family:var(--mono);font-size:10px;}
+.chip{display:inline-block;font-family:var(--mono);font-size:8px;padding:2px 6px;letter-spacing:1px;}
+
+.inp-group{display:flex;flex-direction:column;gap:4px;}
+.inp-group label{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:2px;}
+.inp-group input,.inp-group select{background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:6px 9px;outline:none;width:100%;transition:border-color .2s;}
+.inp-group input:focus,.inp-group select:focus{border-color:var(--accent);}
+.inp-group select option{background:var(--bg3);}
+.inp-hint{font-size:9px;color:var(--text3);}
+
+.btn{font-family:var(--mono);font-size:10px;padding:8px 16px;letter-spacing:2px;cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:var(--accent);color:var(--bg);}.btn-primary:hover{background:#fff;}
+.btn-danger{background:var(--red);color:#fff;}.btn-danger:hover{background:#ff6b7f;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text2);}.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-green{background:var(--green2);color:#fff;}.btn-green:hover{background:var(--green);}
+.btn-orange{background:var(--orange2);color:#fff;}.btn-orange:hover{background:var(--orange);}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+
+.gauge{height:6px;background:var(--border);border-radius:1px;overflow:hidden;margin-top:5px;}
+.gauge-fill{height:100%;border-radius:1px;transition:width .4s ease;}
+.gauge-green{background:var(--green);}.gauge-orange{background:var(--orange);}.gauge-red{background:var(--red);}.gauge-accent{background:var(--accent);}
+
+.range-track{height:10px;border-radius:1px;background:linear-gradient(90deg,#b01f35 0%,#c47f00 22%,#00a854 40%,#00e676 50%,#00a854 60%,#c47f00 78%,#b01f35 100%);position:relative;margin:28px 0 10px;}
+.range-pin{position:absolute;top:-20px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;transition:left .4s;}
+.range-pin-lbl{font-family:var(--mono);font-size:8px;background:rgba(0,200,255,.15);border:1px solid var(--accent2);color:var(--accent);padding:2px 5px;white-space:nowrap;}
+.range-arrow{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:6px solid var(--accent);}
+
+/* SCENARIO TABLE */
+.scen-tbl{width:100%;border-collapse:collapse;font-size:10px;}
+.scen-tbl th{font-family:var(--mono);font-size:8px;color:var(--text3);background:var(--bg3);padding:6px 7px;text-align:center;border:1px solid var(--border);white-space:nowrap;}
+.scen-tbl th.lbl{text-align:left;}
+.scen-tbl td{padding:5px 7px;text-align:right;border:1px solid var(--border);font-family:var(--mono);color:var(--text2);}
+.scen-tbl td.lbl{text-align:left;color:var(--text2);font-family:var(--sans);font-size:10px;white-space:nowrap;}
+.scen-tbl td.pos{color:var(--green);}.scen-tbl td.neg{color:var(--red);}.scen-tbl td.zero{color:var(--text3);}
+.scen-tbl tr.total-row td{background:var(--bg3);font-weight:700;color:var(--text);}
+.scen-tbl td.highlight{background:rgba(0,200,255,.06);}
+.scen-tbl th.highlight{background:rgba(0,200,255,.12);color:var(--accent);}
+
+/* Greeks change highlight */
+.delta-improving{color:var(--green)!important;}
+.delta-worsening{color:var(--red)!important;}
+
+.alert-box{padding:9px 12px;border-left:3px solid;font-size:11px;margin-bottom:8px;line-height:1.5;}
+.alert-box.danger{border-color:var(--red);background:rgba(255,59,85,.06);}
+.alert-box.warning{border-color:var(--orange);background:rgba(255,170,0,.06);}
+.alert-box.ok{border-color:var(--green);background:rgba(0,230,118,.06);}
+.alert-box.info{border-color:var(--accent);background:rgba(0,200,255,.06);}
+
+.cal-wrap{display:flex;gap:2px;flex-wrap:wrap;margin:10px 0 5px;}
+.cal-day{width:26px;height:22px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;border:1px solid transparent;}
+.cal-elapsed{background:var(--bg3);color:var(--text3);}
+.cal-today{background:var(--accent);color:var(--bg);font-weight:700;}
+.cal-remaining{background:var(--bg4);border-color:var(--border);color:var(--text3);}
+.cal-danger{background:rgba(255,59,85,.15);border-color:var(--red2);color:var(--red);}
+.cal-expiry{background:rgba(255,170,0,.2);border-color:var(--orange2);color:var(--orange);font-weight:700;}
+
+/* LIVE PRICE PANEL */
+.live-panel{background:var(--bg2);border:1px solid var(--border);border-top:2px solid var(--green);padding:14px;margin-bottom:12px;}
+.live-status-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+.price-ticker{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);padding:6px 12px;}
+.price-ticker .sym{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:2px;}
+.price-ticker .price{font-family:var(--mono);font-size:14px;font-weight:700;}
+.price-ticker .chg{font-family:var(--mono);font-size:9px;}
+.price-ticker .chg.up{color:var(--green);}.price-ticker .chg.dn{color:var(--red);}
+.fetching{opacity:.5;}
+
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--accent2);padding:22px;width:620px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:var(--mono);color:var(--accent);font-size:12px;letter-spacing:2px;margin-bottom:14px;}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--green2);padding:9px 16px;font-family:var(--mono);font-size:10px;color:var(--green);z-index:9999;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.error{border-color:var(--red2);color:var(--red);}
+
+/* Greeks explanation tooltip */
+.greek-explain{font-size:9px;color:var(--text3);margin-top:4px;line-height:1.4;}
+.arrow-up::before{content:'▲ ';}.arrow-dn::before{content:'▼ ';}
+
+/* ═══ MOBILE / PWA STYLES ═══ */
+@media (max-width: 768px) {
+  .wrap{padding:8px 10px;}
+  .hdr{padding:10px 12px;flex-wrap:wrap;gap:8px;}
+  .hdr-l h1{font-size:11px;letter-spacing:2px;}
+  .hdr-r{gap:6px;}
+  .nav{overflow-x:auto;-webkit-overflow-scrolling:touch;gap:0;}
+  .nav-tab{padding:7px 11px;font-size:8px;letter-spacing:1px;white-space:nowrap;}
+  .g2,.g3,.g4,.g5,.g12,.g21{grid-template-columns:1fr;}
+  .g2.force2{grid-template-columns:1fr 1fr;}
+  .kpi-val{font-size:20px;}
+  .tbl{font-size:10px;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .scen-tbl{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .modal{width:95vw;padding:14px;}
+  .modal-grid{grid-template-columns:1fr;}
+  .btn{padding:9px 12px;font-size:9px;}
+  .card{padding:12px;}
+  #clock{display:none;}
+}
+/* Safe area for notch phones */
+body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);}
+/* Prevent zoom on input tap (iOS) */
+input,select{font-size:16px !important;}
+.tbl input,.modal input,.modal select{font-size:14px !important;}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-l">
+    <h1>⬡ RISK DESK</h1>
+    <p>NIFTY OPTIONS · BLACK-SCHOLES GREEKS · LIVE VIX · MULTI-DEVICE SYNC</p>
+  </div>
+  <div class="hdr-r">
+    <span id="live-status-badge" class="badge badge-gray"><span class="live-dot orange"></span>PRICES: MANUAL</span>
+    <span id="vix-badge" class="badge badge-orange">VIX: —</span>
+    <span id="nifty-badge" class="badge badge-blue">NIFTY: —</span>
+    <button class="btn btn-green" style="padding:5px 12px;font-size:9px;" onclick="fetchLivePrices()">⟳ FETCH LIVE</button>
+    <span id="clock"></span>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-tab active" onclick="switchPage('dashboard')">DASHBOARD</div>
+  <div class="nav-tab" onclick="switchPage('portfolio')">POSITIONS</div>
+  <div class="nav-tab" onclick="switchPage('equity')">EQUITY BOOK</div>
+  <div class="nav-tab" onclick="switchPage('scenario')">SCENARIO P&L</div>
+  <div class="nav-tab" onclick="switchPage('greeks')">GREEKS DEEP DIVE</div>
+  <div class="nav-tab" onclick="switchPage('alerts')">ALERTS & LEVELS</div>
+  <div class="nav-tab" onclick="switchPage('settings')">SETTINGS</div>
+  <div class="nav-tab" id="nav-sync" onclick="switchPage('sync')" style="color:var(--orange);border-color:var(--orange2);">☁ SYNC SETUP</div>
+</div>
+
+<!-- ══════════════════════════════ DASHBOARD -->
+<div id="page-dashboard" class="page active">
+
+  <!-- LIVE PRICE PANEL -->
+  <div class="live-panel">
+    <div class="live-status-bar">
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:2px;">LIVE PRICES</span>
+      <div id="ticker-wrap" style="display:flex;gap:6px;flex-wrap:wrap;flex:1;"></div>
+      <span id="last-fetch-time" style="font-family:var(--mono);font-size:9px;color:var(--text3);"></span>
+      <button class="btn btn-green" style="padding:4px 10px;font-size:8px;" onclick="fetchLivePrices()">⟳ REFRESH</button>
+      <button class="btn btn-ghost" style="padding:4px 10px;font-size:8px;" onclick="switchPage('settings')">+ ADD SYMBOLS</button>
+    </div>
+    <div id="fetch-note" style="font-size:9px;color:var(--text3);line-height:1.5;"></div>
+  </div>
+
+  <!-- KPI STRIP -->
+  <div class="g5 mb12">
+    <div class="card card-accent">
+      <div class="kpi-label">Nifty Spot</div>
+      <div class="kpi-val accent" id="d-nifty">—</div>
+      <div class="kpi-sub" id="d-nifty-sub">1 SD range</div>
+    </div>
+    <div class="card card-orange">
+      <div class="kpi-label">India VIX</div>
+      <div class="kpi-val" id="d-vix" style="color:var(--orange)">—</div>
+      <div class="kpi-sub" id="d-vix-regime">—</div>
+    </div>
+    <div class="card card-green">
+      <div class="kpi-label">Total Opt/Fut P&L ₹</div>
+      <div class="kpi-val kpi-sm" id="d-opt-pnl">—</div>
+      <div class="kpi-sub">Actual (LTP − Trade) × Qty</div>
+    </div>
+    <div class="card card-purple">
+      <div class="kpi-label">Equity P&L ₹</div>
+      <div class="kpi-val kpi-sm" id="d-eq-pnl">—</div>
+      <div class="kpi-sub">Unrealised MTM</div>
+    </div>
+    <div class="card" style="border-top:2px solid var(--yellow)">
+      <div class="kpi-label">Combined P&L ₹</div>
+      <div class="kpi-val kpi-sm" id="d-total-pnl" style="color:var(--yellow)">—</div>
+      <div class="kpi-sub">Options + Equity</div>
+    </div>
+  </div>
+
+  <!-- EXPOSURE + VIX -->
+  <div class="g21 mb12">
+    <div class="card card-accent">
+      <div class="stitle">CURRENT EXPOSURE — BLACK-SCHOLES GREEKS AT SPOT</div>
+      <div class="g4">
+        <div><div class="kpi-label">Net Delta (units)</div><div class="kpi-val kpi-xs accent" id="d-net-delta">—</div><div class="greek-explain">Total directional exposure. +ve = bullish, -ve = bearish.</div></div>
+        <div><div class="kpi-label">Delta Exposure ₹</div><div class="kpi-val kpi-xs" id="d-delta-exp">—</div><div class="greek-explain">₹ change per 1pt Nifty move. Delta × Spot.</div></div>
+        <div><div class="kpi-label">Net Gamma</div><div class="kpi-val kpi-xs red" id="d-gamma">—</div><div class="greek-explain">How fast delta changes per 1pt move. Negative = delta hurts you on big moves.</div></div>
+        <div><div class="kpi-label">Theta / Day ₹</div><div class="kpi-val kpi-xs green" id="d-theta">—</div><div class="greek-explain">Daily premium decay earned (+) or lost (−).</div></div>
+        <div><div class="kpi-label">Vega / 1% IV ₹</div><div class="kpi-val kpi-xs" id="d-vega">—</div><div class="greek-explain">₹ impact if VIX moves 1%. Negative = VIX spike hurts you.</div></div>
+        <div><div class="kpi-label">Equity Delta ₹</div><div class="kpi-val kpi-xs" id="d-eq-delta">—</div><div class="greek-explain">NiftyBees + ETF directional exposure.</div></div>
+        <div><div class="kpi-label">Beta-Adj Equity ₹</div><div class="kpi-val kpi-xs" id="d-eq-beta-delta">—</div><div class="greek-explain">Beta-weighted equity market exposure.</div></div>
+        <div><div class="kpi-label">P&L per 1% Move ₹</div><div class="kpi-val kpi-xs orange" id="d-pnl-1pct">—</div><div class="greek-explain">Combined options + equity sensitivity to 1% Nifty move.</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-orange mb12">
+        <div class="stitle">VIX REGIME</div>
+        <div class="kpi-val" id="d-vix2" style="color:var(--orange);font-size:32px;">—</div>
+        <div id="d-vix-badge2" class="badge badge-green mt6" style="display:inline-block;">—</div>
+        <div id="d-vix-action" class="alert-box ok mt6" style="font-size:10px;"></div>
+      </div>
+      <div class="card card-green">
+        <div class="stitle">DTE & CREDIT</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+          <div><div class="kpi-label">Days to Expiry</div><div class="kpi-val kpi-sm" id="d-dte">—</div></div>
+          <div style="text-align:right;"><div class="kpi-label">Net Credit ₹</div><div class="kpi-val kpi-xs green" id="d-credit">—</div></div>
+        </div>
+        <div class="gauge mt6"><div class="gauge-fill gauge-accent" id="d-dte-bar" style="width:70%;"></div></div>
+        <div id="d-dte-note" class="kpi-sub mt6">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANGE BAR -->
+  <div class="card mb12">
+    <div class="stitle">POSITION RANGE GAUGE</div>
+    <div style="padding:0 16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px;" id="range-ticks"></div>
+      <div class="range-track"><div class="range-pin" id="range-pin" style="left:50%"><div class="range-pin-lbl" id="range-pin-lbl">—</div><div class="range-arrow"></div></div></div>
+      <div style="display:flex;justify-content:space-between;">
+        <span style="font-size:9px;color:var(--red);font-family:var(--mono);">EXIT SHORT PE ↑</span>
+        <span style="font-size:9px;color:var(--orange);font-family:var(--mono);">CAUTION</span>
+        <span style="font-size:9px;color:var(--green);font-family:var(--mono);">SWEET SPOT ✓</span>
+        <span style="font-size:9px;color:var(--orange);font-family:var(--mono);">CAUTION</span>
+        <span style="font-size:9px;color:var(--red);font-family:var(--mono);">EXIT SHORT CE ↑</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDAR + MINI POSITIONS -->
+  <div class="g12 mb12">
+    <div class="card">
+      <div class="stitle">THETA DECAY CALENDAR</div>
+      <div class="cal-wrap" id="cal-wrap"></div>
+      <div id="cal-summary" class="alert-box info" style="font-size:10px;"></div>
+    </div>
+    <div class="card card-green">
+      <div class="stitle">ACTIVE POSITIONS</div>
+      <table class="tbl" id="d-positions-mini">
+        <thead><tr><th>INSTRUMENT</th><th>TYPE</th><th>B/S</th><th>QTY</th><th>BS DELTA</th><th>P&L ₹</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CLIENT TABLE -->
+  <div class="card mb12">
+    <div class="stitle">CLIENT PORTFOLIO — INCOME STATUS</div>
+    <table class="tbl" id="d-client-tbl">
+      <thead><tr><th>CLIENT</th><th>AUM</th><th>STRATEGY</th><th>LOTS</th><th>CREDIT ₹</th><th>TARGET LOW ₹</th><th>TARGET HIGH ₹</th><th>% OF AUM</th><th>STATUS</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ POSITIONS -->
+<div id="page-portfolio" class="page">
+  <div class="card mb12" style="border-color:var(--accent2);">
+    <div class="stitle">OPTIONS & FUTURES POSITIONS</div>
+    <div class="btn-row mb12">
+      <button class="btn btn-primary" onclick="openModal('opt')">+ ADD POSITION</button>
+      <button class="btn btn-ghost" onclick="clearAllPositions()">✕ CLEAR ALL</button>
+      <button class="btn btn-green" style="padding:5px 10px;font-size:9px;" onclick="fetchLivePrices()">⟳ REFRESH GREEKS</button>
+      <div id="greeks-live-status" style="font-family:var(--mono);font-size:9px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <span style="color:var(--text3);">Greeks use →</span>
+        <span id="greeks-spot-badge" class="badge badge-blue">SPOT: —</span>
+        <span id="greeks-iv-badge" class="badge badge-orange">IV: —</span>
+        <span id="greeks-dte-badge" class="badge badge-gray">DTE: auto</span>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+    <table class="tbl" id="opt-tbl">
+      <thead><tr><th>#</th><th>INST</th><th>TYPE</th><th>B/S</th><th>ENTRY SPOT</th><th>STRIKE</th><th title="⚡ Using live VIX when VIX mode ON. Entry IV shown when OFF.">IV% ⚡</th><th title="Auto-calculated daily from expiry date. No manual update needed.">DTE 🗓</th><th>LOT</th><th>LOTS</th><th>NET QTY</th><th>TRADE PRICE ₹</th><th>CURR LTP ₹</th><th title="Recalculates every 1min (market hours) using live Nifty spot + VIX">BS DELTA ↻</th><th>BS GAMMA</th><th>BS THETA/DAY</th><th>BS VEGA</th><th>P&L ₹</th><th>NOTES</th><th>ACT</th></tr></thead>
+      <tbody id="opt-body"></tbody>
+      <tfoot><tr class="total-row" id="opt-total"><td colspan="17" style="text-align:right;">PORTFOLIO TOTALS →</td><td id="opt-total-pnl">—</td><td></td><td></td></tr></tfoot>
+    </table>
+    </div>
+  </div>
+  <div class="g4 mb12">
+    <div class="card card-accent"><div class="kpi-label">Net BS Delta</div><div class="kpi-val kpi-sm accent" id="p-delta">—</div><div class="greek-explain">Full BS delta. Changes with spot, time, vol.</div></div>
+    <div class="card card-green"><div class="kpi-label">Net Theta / Day ₹</div><div class="kpi-val kpi-sm green" id="p-theta">—</div><div class="greek-explain">Daily time decay. Accelerates near expiry.</div></div>
+    <div class="card card-red"><div class="kpi-label">Net Gamma</div><div class="kpi-val kpi-sm red" id="p-gamma">—</div><div class="greek-explain">Negative gamma = losses accelerate on big moves.</div></div>
+    <div class="card card-purple"><div class="kpi-label">Net Vega / 1% IV ₹</div><div class="kpi-val kpi-sm purple" id="p-vega">—</div><div class="greek-explain">VIX spike of 1% = this ₹ impact on portfolio.</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ EQUITY -->
+<div id="page-equity" class="page">
+  <div class="card mb12" style="border-color:var(--green2);">
+    <div class="stitle">EQUITY STOCKS BOOK</div>
+    <div class="btn-row mb12">
+      <button class="btn btn-green" onclick="openModal('eq')">+ ADD STOCK</button>
+      <button class="btn btn-ghost" onclick="clearAllEquity()">✕ CLEAR ALL</button>
+      <button class="btn btn-orange" onclick="fetchLivePrices()">⟳ REFRESH CMPs</button>
+    </div>
+    <div style="overflow-x:auto;">
+    <table class="tbl" id="eq-tbl">
+      <thead><tr><th>#</th><th>STOCK</th><th>EXCH</th><th>L/S</th><th>QTY</th><th>AVG COST ₹</th><th>CMP ₹</th><th>BETA</th><th>INVESTED ₹</th><th>CURR VALUE ₹</th><th>P&L ₹</th><th>P&L%</th><th>DELTA ₹</th><th>BETA-ADJ ₹</th><th>SECTOR</th><th>ACT</th></tr></thead>
+      <tbody id="eq-body"></tbody>
+      <tfoot><tr class="total-row"><td colspan="8">EQUITY TOTALS</td><td id="eq-t-inv">—</td><td id="eq-t-curr">—</td><td id="eq-t-pnl">—</td><td id="eq-t-pnlpct">—</td><td id="eq-t-delta">—</td><td id="eq-t-betadelta">—</td><td></td><td></td></tr></tfoot>
+    </table>
+    </div>
+  </div>
+  <div class="g4">
+    <div class="card card-green"><div class="kpi-label">Total Invested ₹</div><div class="kpi-val kpi-sm" id="e-inv">—</div></div>
+    <div class="card card-accent"><div class="kpi-label">Current Value ₹</div><div class="kpi-val kpi-sm accent" id="e-curr">—</div></div>
+    <div class="card card-green"><div class="kpi-label">Unrealised P&L ₹</div><div class="kpi-val kpi-sm" id="e-pnl">—</div></div>
+    <div class="card card-purple"><div class="kpi-label">Beta-Adj Delta ₹</div><div class="kpi-val kpi-sm purple" id="e-beta">—</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ SCENARIO -->
+<div id="page-scenario" class="page">
+  <div class="card mb12">
+    <div class="stitle">SCENARIO P&L — FULL BLACK-SCHOLES AT EACH SPOT LEVEL</div>
+    <p style="font-size:10px;color:var(--text3);margin-bottom:12px;">P&L = BS price at scenario spot − Entry BS price × Net Qty. Uses live VIX as IV (when VIX mode ON) and auto-calculated DTE from expiry date. Gamma curvature fully captured — not a linear approximation.</p>
+    <div style="overflow-x:auto;"><table class="scen-tbl" id="scen-tbl"></table></div>
+  </div>
+  <div class="card">
+    <div class="stitle">DYNAMIC GREEKS AT EACH SCENARIO SPOT — DELTA CHANGES WITH MARKET</div>
+    <p style="font-size:10px;color:var(--text3);margin-bottom:12px;">This shows exactly how your delta, gamma, theta and vega shift as Nifty moves. Each column is fully recalculated at that spot price via Black-Scholes — not interpolated. This is why delta changes and is not the same across columns.</p>
+    <div style="overflow-x:auto;"><table class="scen-tbl" id="scen-greeks-tbl"></table></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ GREEKS DEEP DIVE -->
+<div id="page-greeks" class="page">
+  <div class="card mb12" style="border-color:var(--purple);">
+    <div class="stitle">WHY DELTA IS DIFFERENT AT EACH SPOT — THE GAMMA EFFECT</div>
+    <div class="g2">
+      <div>
+        <p style="font-size:11px;color:var(--text2);line-height:1.8;margin-bottom:10px;">
+          <strong style="color:var(--accent);">What was fixed (v3.1):</strong> The previous normCDF (cumulative normal distribution) had a broken polynomial approximation — it returned 0 for normCDF(0) instead of 0.5, making every Greek wrong. Now using the validated Abramowitz &amp; Stegun 7.1.26 formula, accurate to &lt;1.5e-7.
+        </p>
+        <p style="font-size:11px;color:var(--text2);line-height:1.8;margin-bottom:10px;">
+          <strong style="color:var(--green);">How delta moves correctly now:</strong> Your portfolio has a dominant <em>long future</em> (+130 delta). Long put positions have <em>negative signed delta</em> which becomes <strong>more negative</strong> as spot falls (put goes ITM). This reduces net portfolio delta on downmoves — your puts are hedging the future. At −5%, net delta falls from ~73 to ~32. At −10%, it falls to near zero. The puts are working.
+        </p>
+        <p style="font-size:11px;color:var(--text2);line-height:1.8;">
+          <strong style="color:var(--orange);">Why Delta Exposure ₹ can still look large on downmoves:</strong> Delta Exposure = NetDelta × ScenarioSpot. Even as NetDelta falls, if you look at the absolute ₹ figure, a lower delta × lower spot can still show a mid-range number. The signed Delta Change row (green = delta falling = puts hedging) is the clearest indicator of hedge effectiveness.
+        </p>
+      </div>
+      <div id="greeks-live-table"></div>
+    </div>
+  </div>
+  <div class="stitle">PER-POSITION GREEKS AT CURRENT SPOT</div>
+  <div style="overflow-x:auto;margin-bottom:12px;">
+    <table class="tbl" id="greeks-full-tbl">
+      <thead><tr><th>#</th><th>INSTRUMENT</th><th>TYPE</th><th>B/S</th><th>NET QTY</th><th>ENTRY SPOT</th><th>STRIKE</th><th>IV%</th><th>DTE</th><th>BS PRICE ₹</th><th>BS DELTA (unit)</th><th>NET DELTA</th><th>GAMMA</th><th>NET GAMMA</th><th>THETA/DAY</th><th>VEGA/1%IV</th></tr></thead>
+      <tbody id="greeks-body"></tbody>
+      <tfoot><tr class="total-row"><td colspan="11">TOTALS</td><td id="g-net-delta">—</td><td></td><td id="g-net-gamma">—</td><td id="g-net-theta">—</td><td id="g-net-vega">—</td></tr></tfoot>
+    </table>
+  </div>
+  <div class="stitle">DELTA SENSITIVITY — HOW FAST DELTA CHANGES WITH SPOT</div>
+  <div style="overflow-x:auto;">
+    <table class="scen-tbl" id="delta-scen-tbl"></table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ ALERTS -->
+<div id="page-alerts" class="page">
+  <div class="g2 mb12">
+    <div><div class="stitle">LIVE ALERT STATUS</div><div id="alert-list"></div></div>
+    <div><div class="stitle">CRITICAL PRICE LEVELS</div><div id="level-list"></div></div>
+  </div>
+  <div class="stitle">NON-NEGOTIABLE RULES</div>
+  <div id="rules-list"></div>
+</div>
+
+<!-- ══════════════════════════════ SETTINGS -->
+<div id="page-settings" class="page">
+  <div class="g2 mb12">
+    <div class="card card-accent">
+      <div class="stitle">MARKET DATA</div>
+      <div class="g2 mb12">
+        <div class="inp-group"><label>NIFTY SPOT</label><input type="number" id="s-nifty" step="5"><div class="inp-hint">Update manually or use FETCH LIVE button</div></div>
+        <div class="inp-group"><label>INDIA VIX</label><input type="number" id="s-vix" step="0.1"></div>
+        <div class="inp-group"><label>DAYS TO EXPIRY</label><input type="number" id="s-dte" step="1"></div>
+        <div class="inp-group"><label>TOTAL NET CREDIT ₹</label><input type="number" id="s-credit" step="100"></div>
+        <div class="inp-group"><label>RISK-FREE RATE %</label><input type="number" id="s-rfr" step="0.1" value="6.5"><div class="inp-hint">Used in Black-Scholes (RBI repo rate)</div></div>
+        <div class="inp-group"><label>DEFAULT IV % (fallback)</label><input type="number" id="s-div" step="0.1" value="12.6"><div class="inp-hint">Used only when VIX mode OFF and position IV is blank</div></div>
+        <div class="inp-group"><label>DEFAULT EXPIRY DATE</label><input type="date" id="s-default-expiry"><div class="inp-hint">Applied to new positions. NSE March 2026 expiry: 2026-03-26 (last Thursday)</div></div>
+        <div class="inp-group" style="grid-column:span 2;">
+          <label>IV SOURCE FOR LIVE GREEKS</label>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:6px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--mono);font-size:11px;">
+              <input type="checkbox" id="s-use-vix" style="width:16px;height:16px;accent-color:var(--orange);" onchange="APP.settings.useLiveVix=this.checked;saveState();renderAll();">
+              <span>Use India VIX as live IV for all positions</span>
+            </label>
+            <span style="font-size:10px;color:var(--text3);">VIX <span style="color:var(--orange);">&#9889;</span> = India 30-day Nifty ATM IV. Updates every 1min with Fetch Live.</span>
+          </div>
+          <div class="inp-hint" style="margin-top:4px;">When ON: all delta/gamma/theta/vega recalculate with live VIX automatically. When OFF: uses stored entry IV per position.</div>
+        </div>
+      </div>
+      <div class="stitle">SPREAD STRIKES</div>
+      <div class="g2 mb12">
+        <div class="inp-group"><label>SHORT PE STRIKE</label><input type="number" id="s-short-pe" step="50"></div>
+        <div class="inp-group"><label>LONG PE STRIKE (hedge)</label><input type="number" id="s-long-pe" step="50"></div>
+        <div class="inp-group"><label>SHORT CE STRIKE</label><input type="number" id="s-short-ce" step="50"></div>
+        <div class="inp-group"><label>LONG CE STRIKE (hedge)</label><input type="number" id="s-long-ce" step="50"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveSettings()">SAVE & REFRESH</button>
+        <button class="btn btn-ghost" onclick="loadDefaults()">RESET TO DEFAULTS</button>
+      </div>
+    </div>
+
+    <div class="card card-green">
+      <div class="stitle">LIVE PRICE FETCH — SYMBOLS</div>
+      <div class="alert-box info mb12">
+        <strong>How it works:</strong> We use Stooq (a free financial data source) via a CORS proxy to fetch live prices. Nifty50 = ^NF500 on Stooq. NSE stocks = SYMBOL.NS. The proxy may occasionally be blocked — in that case use manual input.<br><br>
+        <strong>Market hours:</strong> NSE trades 9:15 AM – 3:30 PM IST Mon–Fri. Prices outside these hours will show previous close.
+      </div>
+      <div id="symbol-cfg">
+        <div class="g2 mb8">
+          <div class="inp-group"><label>NIFTY SYMBOL</label><input id="sym-nifty" value="^NSEI" readonly><div class="inp-hint">Yahoo Finance: ^NSEI</div></div>
+          <div class="inp-group"><label>VIX SYMBOL</label><input id="sym-vix" value="^INDIAVIX" readonly><div class="inp-hint">Yahoo Finance: ^INDIAVIX</div></div>
+        </div>
+        <div class="stitle">EQUITY SYMBOLS (Yahoo Finance format)</div>
+        <div id="eq-symbols-list" style="margin-bottom:10px;"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-green" onclick="fetchLivePrices()">⟳ FETCH LIVE PRICES NOW</button>
+        <button class="btn btn-ghost" onclick="toggleAutoRefresh()">AUTO REFRESH: <span id="auto-refresh-status">OFF</span></button>
+      </div>
+      <div id="fetch-log" style="margin-top:10px;font-family:var(--mono);font-size:9px;color:var(--text3);"></div>
+    </div>
+  </div>
+
+  <div class="g2 mb12">
+    <div class="card card-green">
+      <div class="stitle">CLIENT CONFIGURATION</div>
+      <table class="tbl" id="client-cfg-tbl">
+        <thead><tr><th>CLIENT</th><th>AUM ₹</th><th>LOTS</th><th>STRUCTURE</th><th>TARGET LOW ₹</th><th>TARGET HIGH ₹</th></tr></thead>
+        <tbody id="client-cfg-body"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="stitle">DATA MANAGEMENT</div>
+      <div class="btn-row mb8">
+        <button class="btn btn-danger" onclick="if(confirm('Clear ALL data?'))clearAll()">⚠ CLEAR ALL</button>
+        <button class="btn btn-ghost" onclick="exportData()">↓ EXPORT JSON</button>
+        <button class="btn btn-ghost" onclick="loadFromFile()">↑ IMPORT JSON</button>
+        <input type="file" id="file-import" accept=".json" style="display:none" onchange="importData(event)">
+      </div>
+      <div id="storage-info" class="kpi-sub"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════ SYNC SETUP PAGE -->
+<div id="page-sync" class="page">
+  <div class="g2 mb12">
+
+    <!-- Step-by-step setup card -->
+    <div class="card card-orange">
+      <div class="stitle">☁ FIREBASE SYNC SETUP — ONE TIME</div>
+      <div id="sync-status-bar" class="alert-box info mb12" style="font-family:var(--mono);font-size:11px;">
+        <strong id="sync-status-title">STATUS: NOT CONFIGURED</strong><br>
+        <span id="sync-status-msg">Follow the steps below to enable multi-device sync. Takes ~8 minutes.</span>
+      </div>
+
+      <div class="stitle">STEP 1 — CREATE FIREBASE PROJECT</div>
+      <div class="alert-box info mb12" style="font-size:11px;line-height:1.8;">
+        1. Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent);">console.firebase.google.com</a><br>
+        2. Click <strong>Add project</strong> → name it <strong>risk-desk</strong> → Continue<br>
+        3. Disable Google Analytics (not needed) → <strong>Create project</strong><br>
+        4. Wait ~30 seconds for it to provision
+      </div>
+
+      <div class="stitle">STEP 2 — ENABLE REALTIME DATABASE</div>
+      <div class="alert-box info mb12" style="font-size:11px;line-height:1.8;">
+        1. In left sidebar: <strong>Build → Realtime Database</strong><br>
+        2. Click <strong>Create Database</strong><br>
+        3. Choose location: <strong>asia-south1 (Mumbai)</strong> → Next<br>
+        4. Select <strong>Start in test mode</strong> → Enable<br>
+        <span style="color:var(--orange);">⚠ Test mode is fine — your data is protected by the URL being private to you</span>
+      </div>
+
+      <div class="stitle">STEP 3 — GET CONFIG VALUES</div>
+      <div class="alert-box info mb12" style="font-size:11px;line-height:1.8;">
+        1. Click gear icon ⚙ → <strong>Project settings</strong><br>
+        2. Scroll to <strong>Your apps</strong> → Click <strong>&lt;/&gt; Web</strong><br>
+        3. App nickname: <strong>risk-desk-web</strong> → Register app<br>
+        4. You'll see a <code>firebaseConfig</code> object — copy the 5 values below
+      </div>
+
+      <div class="stitle">STEP 4 — PASTE CONFIG HERE</div>
+      <div class="g2 mb12">
+        <div class="inp-group"><label>API KEY</label><input id="fb-api-key" placeholder="AIzaSy..."><div class="inp-hint">firebaseConfig.apiKey</div></div>
+        <div class="inp-group"><label>PROJECT ID</label><input id="fb-project-id" placeholder="risk-desk-xxxxx"><div class="inp-hint">firebaseConfig.projectId</div></div>
+        <div class="inp-group"><label>DATABASE URL</label><input id="fb-db-url" placeholder="https://risk-desk-xxxxx-default-rtdb.asia-southeast1.firebasedatabase.app"><div class="inp-hint">firebaseConfig.databaseURL</div></div>
+        <div class="inp-group"><label>APP ID</label><input id="fb-app-id" placeholder="1:123456789:web:abc..."><div class="inp-hint">firebaseConfig.appId</div></div>
+        <div class="inp-group"><label>MESSAGING SENDER ID</label><input id="fb-sender-id" placeholder="123456789"><div class="inp-hint">firebaseConfig.messagingSenderId</div></div>
+        <div class="inp-group"><label>AUTH DOMAIN</label><input id="fb-auth-domain" placeholder="risk-desk-xxxxx.firebaseapp.com"><div class="inp-hint">firebaseConfig.authDomain</div></div>
+      </div>
+      <div class="btn-row mb12">
+        <button class="btn btn-primary" onclick="saveFirebaseConfig()">SAVE & CONNECT</button>
+        <button class="btn btn-ghost" onclick="testFirebaseConnection()">TEST CONNECTION</button>
+        <button class="btn btn-danger" onclick="clearFirebaseConfig()">CLEAR CONFIG</button>
+      </div>
+      <div id="fb-connect-log" style="font-family:var(--mono);font-size:9px;color:var(--text3);min-height:20px;"></div>
+    </div>
+
+    <!-- Status + GitHub deploy card -->
+    <div>
+      <div class="card card-green mb12">
+        <div class="stitle">SYNC STATUS</div>
+        <div style="display:grid;gap:8px;">
+          <div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg3);border:1px solid var(--border);">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">FIREBASE</span>
+            <span id="fb-status-badge" class="badge badge-gray">NOT CONFIGURED</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg3);border:1px solid var(--border);">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">LAST SYNC</span>
+            <span id="fb-last-sync" style="font-family:var(--mono);font-size:10px;color:var(--text2);">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg3);border:1px solid var(--border);">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">MODE</span>
+            <span id="fb-mode-badge" class="badge badge-gray">LOCAL ONLY</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg3);border:1px solid var(--border);">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">RECORDS</span>
+            <span id="fb-records-count" style="font-family:var(--mono);font-size:10px;color:var(--text2);">—</span>
+          </div>
+        </div>
+        <div class="btn-row mt8">
+          <button class="btn btn-green" onclick="forceSyncToFirebase()" style="font-size:9px;">↑ PUSH TO CLOUD</button>
+          <button class="btn btn-ghost" onclick="forceSyncFromFirebase()" style="font-size:9px;">↓ PULL FROM CLOUD</button>
+        </div>
+      </div>
+
+      <div class="card card-accent">
+        <div class="stitle">STEP 5 — DEPLOY TO GITHUB PAGES</div>
+        <div class="alert-box info mb8" style="font-size:11px;line-height:1.8;">
+          1. Go to <a href="https://github.com" target="_blank" style="color:var(--accent);">github.com</a> → Sign up (free)<br>
+          2. Click <strong>+</strong> → New repository → name: <strong>risk-desk</strong><br>
+          3. Set to <strong>Public</strong> → Create repository<br>
+          4. Click <strong>uploading an existing file</strong><br>
+          5. <strong>Download this file</strong> (button below) → drag it into GitHub → Commit<br>
+          6. Go to Settings → Pages → Source: <strong>main branch</strong> → Save<br>
+          7. Your app URL: <code style="color:var(--accent);">https://YOUR-USERNAME.github.io/risk-desk</code>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="downloadConfiguredFile()" style="font-size:9px;">↓ DOWNLOAD CONFIGURED FILE</button>
+        </div>
+        <div class="alert-box warning mt8" style="font-size:10px;">
+          <strong>Important:</strong> Download AFTER saving Firebase config above. The downloaded file will have your config baked in — ready to upload to GitHub.
+        </div>
+      </div>
+
+      <div class="card mt8" style="border-top:2px solid var(--purple);">
+        <div class="stitle">INSTALL AS APP (AFTER GITHUB DEPLOY)</div>
+        <div style="font-size:11px;line-height:1.8;color:var(--text2);">
+          <strong style="color:var(--text);">Android Chrome:</strong><br>
+          Open your GitHub Pages URL → tap ⋮ menu → <strong>Add to Home screen</strong><br><br>
+          <strong style="color:var(--text);">Windows Chrome/Edge:</strong><br>
+          Open URL → click install icon in address bar (or ⋮ → Install RISK DESK)<br><br>
+          <strong style="color:var(--text);">iPhone Safari:</strong><br>
+          Open URL → tap Share → <strong>Add to Home Screen</strong>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- end wrap -->
+
+<!-- MODALS -->
+<div class="modal-bg" id="modal-opt">
+  <div class="modal">
+    <h3 id="modal-title-opt">ADD NEW OPTION OR FUTURE</h3>
+    <input type="hidden" id="opt-edit-idx">
+    <div class="modal-grid">
+      <div class="inp-group"><label>INSTRUMENT</label><input id="f-inst" value="NIFTY"></div>
+      <div class="inp-group"><label>TYPE</label><select id="f-type"><option>Call</option><option>Put</option><option>Future</option></select></div>
+      <div class="inp-group"><label>BUY / SELL</label><select id="f-bs"><option>Buy</option><option>Sell</option></select></div>
+      <div class="inp-group"><label>ENTRY SPOT ₹</label><input id="f-spot" type="number" step="5"></div>
+      <div class="inp-group"><label>STRIKE ₹ (options)</label><input id="f-strike" type="number" step="50"></div>
+      <div class="inp-group"><label>ENTRY IV %</label><input id="f-iv" type="number" step="0.1" placeholder="12.6"></div>
+      <div class="inp-group"><label>DTE AT ENTRY</label><input id="f-dte" type="number" step="1"></div>
+      <div class="inp-group"><label>EXPIRY DATE</label><input id="f-expiry" type="date"><div class="inp-hint">DTE auto-calculated daily from this date</div></div>
+      <div class="inp-group"><label>LOT SIZE</label><input id="f-lotsize" type="number" value="75"></div>
+      <div class="inp-group"><label>NUMBER OF LOTS</label><input id="f-lots" type="number" value="1"></div>
+      <div class="inp-group"><label>TRADE PRICE ₹ (actual)</label><input id="f-tradeprice" type="number" step="0.05"></div>
+      <div class="inp-group"><label>CURRENT LTP ₹</label><input id="f-ltp" type="number" step="0.05"></div>
+      <div class="inp-group" style="grid-column:span 2;"><label>NOTES</label><input id="f-notes"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="savePosition()">SAVE</button>
+      <button class="btn btn-ghost" onclick="closeModal('opt')">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-eq">
+  <div class="modal">
+    <h3 id="modal-title-eq">ADD NEW EQUITY POSITION</h3>
+    <input type="hidden" id="eq-edit-idx">
+    <div class="modal-grid">
+      <div class="inp-group"><label>STOCK SYMBOL</label><input id="ef-stock"></div>
+      <div class="inp-group"><label>YAHOO SYMBOL (for live price)</label><input id="ef-yahoo" placeholder="NIFTYBEES.NS"><div class="inp-hint">Used for live price fetch. Leave blank to skip.</div></div>
+      <div class="inp-group"><label>EXCHANGE</label><select id="ef-exch"><option>NSE</option><option>BSE</option></select></div>
+      <div class="inp-group"><label>LONG / SHORT</label><select id="ef-dir"><option>Long</option><option>Short</option></select></div>
+      <div class="inp-group"><label>QUANTITY</label><input id="ef-qty" type="number"></div>
+      <div class="inp-group"><label>AVG COST ₹</label><input id="ef-cost" type="number" step="0.01"></div>
+      <div class="inp-group"><label>CMP ₹ (live)</label><input id="ef-cmp" type="number" step="0.01"></div>
+      <div class="inp-group"><label>BETA</label><input id="ef-beta" type="number" step="0.01" value="1"></div>
+      <div class="inp-group"><label>SECTOR</label><input id="ef-sector"></div>
+      <div class="inp-group"><label>NOTES</label><input id="ef-notes"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="saveEquity()">SAVE</button>
+      <button class="btn btn-ghost" onclick="closeModal('eq')">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// BLACK-SCHOLES ENGINE — FULL IMPLEMENTATION
+// ═══════════════════════════════════════════════════════════════
+
+// Standard normal CDF — Abramowitz & Stegun 7.1.26, max error < 1.5e-7
+// Verified: normCDF(0)=0.5, normCDF(1)=0.8413, normCDF(-1)=0.1587, normCDF(2)=0.9772
+function normCDF(x) {
+  const sign = x < 0 ? -1 : 1;
+  const z = Math.abs(x) / Math.SQRT2;
+  const t = 1 / (1 + 0.3275911 * z);
+  const erfc = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429)))) * Math.exp(-z * z);
+  return 0.5 * (1 + sign * (1 - erfc));
+}
+
+function normPDF(x) {
+  return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
+}
+
+// Full Black-Scholes: returns {price, delta, gamma, theta, vega}
+// S = spot, K = strike, r = risk-free (decimal), sigma = IV (decimal), T = time in years
+// type = 'Call' or 'Put', dir = 1 (long) or -1 (short), qty = absolute units
+function bs(S, K, r, sigma, T, type, dir, qty) {
+  if (T <= 0) T = 1/365;
+  const sqrtT = Math.sqrt(T);
+  const d1 = (Math.log(S/K) + (r + 0.5*sigma*sigma)*T) / (sigma*sqrtT);
+  const d2 = d1 - sigma*sqrtT;
+
+  let price, deltaUnit, gammaUnit, thetaUnit, vegaUnit;
+
+  if (type === 'Call') {
+    price      = S*normCDF(d1) - K*Math.exp(-r*T)*normCDF(d2);
+    deltaUnit  = normCDF(d1);
+    gammaUnit  = normPDF(d1) / (S*sigma*sqrtT);
+    thetaUnit  = -(S*normPDF(d1)*sigma)/(2*sqrtT) - r*K*Math.exp(-r*T)*normCDF(d2);
+    vegaUnit   = S*normPDF(d1)*sqrtT;
+  } else {
+    price      = K*Math.exp(-r*T)*normCDF(-d2) - S*normCDF(-d1);
+    deltaUnit  = normCDF(d1) - 1;
+    gammaUnit  = normPDF(d1) / (S*sigma*sqrtT);
+    thetaUnit  = -(S*normPDF(d1)*sigma)/(2*sqrtT) + r*K*Math.exp(-r*T)*normCDF(-d2);
+    vegaUnit   = S*normPDF(d1)*sqrtT;
+  }
+
+  // Scale to net position: delta/gamma in units, theta/vega in ₹
+  const netDelta = deltaUnit * qty * dir;        // signed delta units
+  const netGamma = gammaUnit * qty * dir;        // signed gamma
+  const netTheta = (thetaUnit/365) * qty * dir;  // ₹/day
+  const netVega  = (vegaUnit/100)  * qty * dir;  // ₹ per 1% IV move
+
+  return { price, deltaUnit, netDelta, netGamma, netTheta, netVega, d1, d2 };
+}
+
+// DTE HELPER: auto-calc from expiry date so DTE decrements daily automatically
+// Expiry stored as 'YYYY-MM-DD'. NSE market closes at 15:30 IST = 10:00 UTC.
+function calcDTE(pos) {
+  if (pos.expiry) {
+    const expClose = new Date(pos.expiry + 'T10:00:00Z').getTime();
+    const days = (expClose - Date.now()) / 86400000;
+    return Math.max(1 / 365, days);
+  }
+  return (pos.dteCurr !== undefined ? pos.dteCurr : (pos.dte || APP.settings.dte || 30));
+}
+
+// IV HELPER: use India VIX as live IV proxy when useLiveVix=true.
+// India VIX IS the 30-day Nifty ATM implied volatility annualised --
+// so VIX/100 is the exact sigma input for Nifty option BS calculation.
+// This means every 1-min Fetch Live updates all deltas/greeks automatically.
+function calcIV(pos) {
+  if (APP.settings.useLiveVix && APP.settings.vix > 0) return APP.settings.vix / 100;
+  return (pos.iv || APP.settings.defIV || 12.6) / 100;
+}
+
+// MAIN BS CALCULATOR
+// spotOverride: scenario table passes different spots. Otherwise uses live Nifty.
+function calcBS(pos, spotOverride) {
+  const S = (spotOverride !== undefined && spotOverride !== null)
+            ? spotOverride : (APP.settings.nifty || pos.spot || 25725);
+  const K = pos.strike;
+  const r = (APP.settings.rfr || 6.5) / 100;
+  const sigma = calcIV(pos);
+  const T = calcDTE(pos) / 365;
+  const dir = pos.bs === 'Buy' ? 1 : -1;
+  const qty = pos.lotSize * pos.lots;
+
+  if (pos.type === 'Future') {
+    const netDelta = qty * dir;
+    return { price: S, deltaUnit: 1, netDelta, netGamma: 0, netTheta: 0, netVega: 0 };
+  }
+  if (!K || !sigma || sigma <= 0) {
+    return { price: 0, deltaUnit: 0, netDelta: 0, netGamma: 0, netTheta: 0, netVega: 0 };
+  }
+
+  return bs(S, K, r, sigma, T, pos.type, dir, qty);
+}
+
+// BS theoretical price at a given spot for scenario P&L
+// Uses same calcIV + calcDTE as calcBS for consistency.
+function bsPrice(pos, S) {
+  const K = pos.strike;
+  const r = (APP.settings.rfr || 6.5) / 100;
+  const sigma = calcIV(pos);
+  const T = calcDTE(pos) / 365;
+  if (T <= 0 || !K || sigma <= 0) return 0;
+  const sqrtT = Math.sqrt(T);
+  const d1 = (Math.log(S/K) + (r + 0.5*sigma*sigma)*T) / (sigma*sqrtT);
+  const d2 = d1 - sigma*sqrtT;
+  if (pos.type === "Call") return S*normCDF(d1) - K*Math.exp(-r*T)*normCDF(d2);
+  return K*Math.exp(-r*T)*normCDF(-d2) - S*normCDF(-d1);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATE & STORAGE
+// ═══════════════════════════════════════════════════════════════
+const STORAGE_KEY = 'nifty_cmd_v3';
+
+const DEFAULT_SETTINGS = {
+  nifty:25725, vix:12.6, dte:40, credit:67250,
+  shortPE:25200, longPE:24800, shortCE:26200, longCE:26500,
+  rfr:6.5, defIV:12.6, useLiveVix:true, defaultExpiry:'2026-03-26'
+};
+
+const DEFAULT_POSITIONS = [
+  { inst:'NIFTY', type:'Call', bs:'Sell', spot:25760, strike:25800, iv:12, dte:5, dteCurr:5, expiry:'2026-02-27', lotSize:65, lots:1, tradePrice:90, ltp:110, notes:'Weekly' },
+  { inst:'NIFTY', type:'Call', bs:'Sell', spot:25760, strike:26000, iv:12, dte:5, dteCurr:5, expiry:'2026-02-27', lotSize:65, lots:1, tradePrice:54, ltp:38.5, notes:'Weekly' },
+  { inst:'NIFTY', type:'Put',  bs:'Buy',  spot:25500, strike:25200, iv:12, dte:39, dteCurr:40, expiry:'2026-03-26', lotSize:65, lots:1, tradePrice:184.65, ltp:142, notes:'Monthly' },
+  { inst:'NIFTY', type:'Put',  bs:'Buy',  spot:25500, strike:25000, iv:12, dte:39, dteCurr:40, expiry:'2026-03-26', lotSize:65, lots:1, tradePrice:145.98, ltp:110, notes:'Monthly' },
+  { inst:'NIFTY', type:'Future', bs:'Buy', spot:25752, strike:null, iv:null, dte:5, dteCurr:5, expiry:'2026-02-27', lotSize:65, lots:2, tradePrice:25310.45, ltp:25710, notes:'Weekly' },
+];
+
+const DEFAULT_EQUITY = [
+  { stock:'CPSEETF',   yahoo:'CPSEETF.NS',   exch:'NSE', dir:'Long', qty:1000, cost:93.04,  cmp:100.65, beta:1.05, sector:'INDEX', notes:'' },
+  { stock:'NIFTYBEES', yahoo:'NIFTYBEES.NS',  exch:'NSE', dir:'Long', qty:7500, cost:286.42, cmp:291.61, beta:1,    sector:'INDEX', notes:'' },
+  { stock:'INFRABEES', yahoo:'INFRABEES.NS',  exch:'NSE', dir:'Long', qty:100,  cost:925.51, cmp:998.02, beta:1,    sector:'INDEX', notes:'' },
+  { stock:'MOREALTY',  yahoo:'MOIL.NS',       exch:'NSE', dir:'Long', qty:1750, cost:85.01,  cmp:83.32,  beta:1.8,  sector:'PSU Banks', notes:'' },
+];
+
+const DEFAULT_CLIENTS = [
+  { id:'A', aum:5000000, lots:2, credit:25500, targetLo:70000,  targetHi:85000,  structure:'Iron Condor + Weekly' },
+  { id:'B', aum:3600000, lots:2, credit:19500, targetLo:34500,  targetHi:42000,  structure:'Iron Condor' },
+  { id:'C', aum:2000000, lots:2, credit:13500, targetLo:20700,  targetHi:23100,  structure:'Bull Put Spread' },
+  { id:'D', aum:1650000, lots:2, credit:13500, targetLo:18900,  targetHi:20700,  structure:'Bull Put Spread' },
+  { id:'E', aum:1200000, lots:1, credit:6750,  targetLo:10650,  targetHi:14000,  structure:'Single Bull Put' },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE CONFIG — filled by user in Sync Setup page
+// ═══════════════════════════════════════════════════════════════
+const FB_CONFIG_KEY = 'risk_desk_firebase_cfg';
+let fbDatabase = null;
+let fbConnected = false;
+let fbSyncing = false;
+let fbLastSync = null;
+
+function loadFirebaseConfig() {
+  try { const r = localStorage.getItem(FB_CONFIG_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; }
+}
+function saveFirebaseConfig() {
+  const cfg = {
+    apiKey:            el('fb-api-key').value.trim(),
+    projectId:         el('fb-project-id').value.trim(),
+    databaseURL:       el('fb-db-url').value.trim(),
+    appId:             el('fb-app-id').value.trim(),
+    messagingSenderId: el('fb-sender-id').value.trim(),
+    authDomain:        el('fb-auth-domain').value.trim(),
+  };
+  if (!cfg.apiKey || !cfg.databaseURL || !cfg.projectId) {
+    toast('Fill in API Key, Project ID and Database URL at minimum', true);
+    return;
+  }
+  localStorage.setItem(FB_CONFIG_KEY, JSON.stringify(cfg));
+  toast('Firebase config saved — connecting...');
+  initFirebase(cfg);
+}
+function clearFirebaseConfig() {
+  if (!confirm('Remove Firebase config? App will work offline only.')) return;
+  localStorage.removeItem(FB_CONFIG_KEY);
+  fbDatabase = null; fbConnected = false;
+  updateSyncUI();
+  toast('Firebase config cleared');
+}
+
+async function initFirebase(cfg) {
+  const log = el('fb-connect-log');
+  if (log) log.textContent = '⏳ Loading Firebase SDK...';
+  try {
+    // Dynamically load Firebase SDK (CDN) — avoids bundler, works in single HTML file
+    await loadScript('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js');
+
+    if (log) log.textContent = '⏳ Initialising Firebase app...';
+
+    // Avoid re-initialising if already done
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(cfg);
+    }
+    fbDatabase = firebase.database();
+
+    // Test connection with a lightweight read
+    if (log) log.textContent = '⏳ Testing connection...';
+    await fbDatabase.ref('.info/connected').once('value');
+
+    fbConnected = true;
+    if (log) log.textContent = '✓ Connected to Firebase! Setting up real-time listener...';
+    toast('Firebase connected ✓ — sync active');
+    setupFirebaseListener();
+    updateSyncUI();
+
+    // Push current local data to Firebase on first connect if cloud is empty
+    const snap = await fbDatabase.ref('riskdesk/app').once('value');
+    if (!snap.exists()) {
+      if (log) log.textContent += '
+⏳ Cloud empty — pushing local data...';
+      await fbDatabase.ref('riskdesk/app').set(APP);
+      if (log) log.textContent += '
+✓ Local data pushed to cloud.';
+    }
+  } catch(e) {
+    fbConnected = false;
+    const msg = '✗ Firebase connection failed: ' + e.message;
+    if (log) log.textContent = msg;
+    toast('Firebase failed: ' + e.message, true);
+    console.error('Firebase init error:', e);
+  }
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector('script[src="'+src+'"]')) { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+function setupFirebaseListener() {
+  if (!fbDatabase) return;
+  // Real-time listener — any change from another device triggers a local update
+  fbDatabase.ref('riskdesk/app').on('value', snap => {
+    const remote = snap.val();
+    if (!remote || fbSyncing) return; // ignore if we triggered the write
+    APP = remote;
+    // Apply migration guards on received data
+    if (!APP.clients) APP.clients = JSON.parse(JSON.stringify(DEFAULT_CLIENTS));
+    if (!APP.settings.rfr) APP.settings.rfr = 6.5;
+    if (!APP.settings.defIV) APP.settings.defIV = 12.6;
+    if (APP.settings.useLiveVix === undefined) APP.settings.useLiveVix = true;
+    if (!APP.settings.defaultExpiry) APP.settings.defaultExpiry = '2026-03-26';
+    APP.positions.forEach(p => { if (!p.expiry) p.expiry = APP.settings.defaultExpiry; });
+    // Save to localStorage as offline cache
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(APP)); } catch(e) {}
+    fbLastSync = new Date();
+    updateSyncUI();
+    renderAll();
+    loadSettingsForm();
+  });
+}
+
+async function forceSyncToFirebase() {
+  if (!fbDatabase) { toast('Firebase not connected', true); return; }
+  try {
+    fbSyncing = true;
+    await fbDatabase.ref('riskdesk/app').set(APP);
+    fbSyncing = false;
+    fbLastSync = new Date();
+    updateSyncUI();
+    toast('Pushed to cloud ✓');
+  } catch(e) { fbSyncing = false; toast('Push failed: '+e.message, true); }
+}
+
+async function forceSyncFromFirebase() {
+  if (!fbDatabase) { toast('Firebase not connected', true); return; }
+  try {
+    const snap = await fbDatabase.ref('riskdesk/app').once('value');
+    const remote = snap.val();
+    if (!remote) { toast('Nothing in cloud yet', true); return; }
+    APP = remote;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(APP)); } catch(e) {}
+    fbLastSync = new Date();
+    updateSyncUI();
+    renderAll();
+    loadSettingsForm();
+    toast('Pulled from cloud ✓');
+  } catch(e) { toast('Pull failed: '+e.message, true); }
+}
+
+async function testFirebaseConnection() {
+  const cfg = loadFirebaseConfig();
+  if (!cfg) { toast('No config saved yet', true); return; }
+  const log = el('fb-connect-log');
+  if (log) log.textContent = '⏳ Testing...';
+  await initFirebase(cfg);
+}
+
+function updateSyncUI() {
+  const badge = el('fb-status-badge');
+  const modeBadge = el('fb-mode-badge');
+  const lastSync = el('fb-last-sync');
+  const records = el('fb-records-count');
+  const navSync = el('nav-sync');
+  const statusTitle = el('sync-status-title');
+  const statusMsg = el('sync-status-msg');
+
+  if (fbConnected) {
+    if (badge) { badge.textContent = 'CONNECTED ✓'; badge.className = 'badge badge-green'; }
+    if (modeBadge) { modeBadge.textContent = 'CLOUD SYNC ON'; modeBadge.className = 'badge badge-green'; }
+    if (navSync) { navSync.textContent = '☁ SYNC ✓'; navSync.style.color = 'var(--green)'; }
+    if (statusTitle) statusTitle.textContent = 'STATUS: CONNECTED — SYNC ACTIVE';
+    if (statusMsg) statusMsg.textContent = 'All changes sync to cloud in real-time. Open on any device to see live data.';
+  } else {
+    const cfg = loadFirebaseConfig();
+    if (badge) { badge.textContent = cfg ? 'CONFIG SAVED' : 'NOT CONFIGURED'; badge.className = cfg ? 'badge badge-orange' : 'badge badge-gray'; }
+    if (modeBadge) { modeBadge.textContent = 'LOCAL ONLY'; modeBadge.className = 'badge badge-gray'; }
+    if (navSync) { navSync.textContent = '☁ SYNC SETUP'; navSync.style.color = cfg ? 'var(--orange)' : 'var(--orange)'; }
+  }
+  if (lastSync && fbLastSync) lastSync.textContent = fbLastSync.toLocaleTimeString('en-IN', {hour12:false});
+  if (records && APP) {
+    records.textContent = (APP.positions?.length||0) + ' positions · ' + (APP.equity?.length||0) + ' stocks';
+  }
+  // Load saved config into form if present
+  const cfg = loadFirebaseConfig();
+  if (cfg) {
+    const fields = {
+      'fb-api-key': cfg.apiKey, 'fb-project-id': cfg.projectId,
+      'fb-db-url': cfg.databaseURL, 'fb-app-id': cfg.appId,
+      'fb-sender-id': cfg.messagingSenderId, 'fb-auth-domain': cfg.authDomain
+    };
+    Object.entries(fields).forEach(([id, val]) => { const e = el(id); if(e && val) e.value = val; });
+  }
+}
+
+function downloadConfiguredFile() {
+  // Inject current Firebase config into the file and download it
+  const cfg = loadFirebaseConfig();
+  if (!cfg || !cfg.apiKey) {
+    toast('Save Firebase config first!', true);
+    return;
+  }
+  // Get the current page HTML source and inject config as a pre-filled constant
+  const src = document.documentElement.outerHTML;
+  // Replace the FIREBASE_PRECONFIG placeholder with actual values
+  const configured = src.replace(
+    'const FIREBASE_PRECONFIG = null;',
+    'const FIREBASE_PRECONFIG = ' + JSON.stringify(cfg) + ';'
+  );
+  const blob = new Blob([configured], {type: 'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'risk-desk.html';
+  a.click();
+  toast('Downloaded risk-desk.html — upload this to GitHub ✓');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATE & STORAGE — Firebase-aware
+// ═══════════════════════════════════════════════════════════════
+// Pre-baked config (filled when user downloads configured file)
+const FIREBASE_PRECONFIG = null;
+
+function loadState() {
+  try { const r = localStorage.getItem(STORAGE_KEY); if(r) return JSON.parse(r); } catch(e){}
+  return null;
+}
+
+function saveState() {
+  // Always save to localStorage (offline cache + fallback)
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(APP)); updateStorageInfo(); } catch(e) {}
+  // If Firebase connected, push to cloud too
+  if (fbDatabase && fbConnected) {
+    fbSyncing = true;
+    fbDatabase.ref('riskdesk/app').set(APP)
+      .then(() => { fbSyncing = false; fbLastSync = new Date(); updateSyncUI(); })
+      .catch(e => { fbSyncing = false; console.warn('Firebase write failed:', e); });
+  }
+}
+
+let saved = loadState();
+let APP = saved || {
+  settings: {...DEFAULT_SETTINGS},
+  positions: JSON.parse(JSON.stringify(DEFAULT_POSITIONS)),
+  equity:    JSON.parse(JSON.stringify(DEFAULT_EQUITY)),
+  clients:   JSON.parse(JSON.stringify(DEFAULT_CLIENTS)),
+};
+if (!APP.clients) APP.clients = JSON.parse(JSON.stringify(DEFAULT_CLIENTS));
+if (!APP.settings.rfr) APP.settings.rfr = 6.5;
+if (!APP.settings.defIV) APP.settings.defIV = 12.6;
+if (APP.settings.useLiveVix === undefined) APP.settings.useLiveVix = true;
+if (!APP.settings.defaultExpiry) APP.settings.defaultExpiry = '2026-03-26';
+APP.positions.forEach(p => { if (!p.expiry) p.expiry = APP.settings.defaultExpiry; });
+
+// ═══════════════════════════════════════════════════════════════
+// LIVE PRICE FETCHING
+// ═══════════════════════════════════════════════════════════════
+let autoRefreshTimer = null;
+let autoRefreshOn = false;
+
+// Uses allorigins CORS proxy → Yahoo Finance v8 quote API
+async function fetchYahooPrice(symbol) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
+  const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+  try {
+    const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+    const data = await res.json();
+    const meta = data?.chart?.result?.[0]?.meta;
+    if (!meta) return null;
+    return {
+      price: meta.regularMarketPrice || meta.previousClose,
+      prevClose: meta.previousClose,
+      change: (meta.regularMarketPrice - meta.previousClose),
+      changePct: ((meta.regularMarketPrice - meta.previousClose) / meta.previousClose * 100),
+      symbol
+    };
+  } catch(e) { return null; }
+}
+
+async function fetchLivePrices() {
+  const badge = el('live-status-badge');
+  badge.innerHTML = `<span class="live-dot orange"></span>FETCHING...`;
+  el('fetch-note').textContent = 'Fetching live prices via Yahoo Finance proxy...';
+
+  const fetchResults = [];
+  let updated = 0;
+
+  // Nifty
+  const niftyData = await fetchYahooPrice('^NSEI');
+  if (niftyData?.price) {
+    APP.settings.nifty = Math.round(niftyData.price * 100) / 100;
+    fetchResults.push({ sym:'NIFTY', ...niftyData });
+    updated++;
+  }
+
+  // VIX
+  const vixData = await fetchYahooPrice('^INDIAVIX');
+  if (vixData?.price) {
+    APP.settings.vix = Math.round(vixData.price * 100) / 100;
+    fetchResults.push({ sym:'VIX', ...vixData });
+    updated++;
+  }
+
+  // Equity symbols
+  for (const eq of APP.equity) {
+    if (!eq.yahoo) continue;
+    const d = await fetchYahooPrice(eq.yahoo);
+    if (d?.price) {
+      eq.cmp = Math.round(d.price * 100) / 100;
+      fetchResults.push({ sym: eq.stock, ...d });
+      updated++;
+    }
+  }
+
+  // Render tickers
+  const tickerWrap = el('ticker-wrap');
+  tickerWrap.innerHTML = fetchResults.map(r => {
+    const chgCls = r.change >= 0 ? 'up' : 'dn';
+    const sign = r.change >= 0 ? '+' : '';
+    return `<div class="price-ticker">
+      <span class="sym">${r.sym}</span>
+      <span class="price ${r.change >= 0 ? 'green' : 'red'}">${r.price?.toLocaleString('en-IN',{maximumFractionDigits:2})}</span>
+      <span class="chg ${chgCls}">${sign}${r.changePct?.toFixed(2)}%</span>
+    </div>`;
+  }).join('');
+
+  if (updated > 0) {
+    const t = new Date().toLocaleTimeString('en-IN',{hour12:false});
+    el('last-fetch-time').textContent = `Last: ${t}`;
+    el('fetch-log').textContent = `✓ Fetched ${updated} symbols at ${t}`;
+    badge.innerHTML = `<span class="live-dot"></span>LIVE · ${t}`;
+    el('fetch-note').textContent = `✓ ${updated} prices updated from Yahoo Finance. Nifty: ${APP.settings.nifty?.toLocaleString('en-IN')} · VIX: ${APP.settings.vix}`;
+    saveState();
+    renderAll();
+    // Update settings form if open
+    loadSettingsForm();
+    toast(`Live prices updated ✓ (${updated} symbols)`);
+  } else {
+    badge.innerHTML = `<span class="live-dot red"></span>FETCH FAILED`;
+    el('fetch-note').textContent = '⚠ Could not fetch live prices. Yahoo proxy may be unavailable or market is closed. Update manually in Settings.';
+    el('fetch-log').textContent = '✗ All fetches failed. Check internet connection or try again.';
+    toast('Live fetch failed — use manual input', true);
+  }
+
+  // Update equity symbols list in settings
+  renderEqSymbolsList();
+}
+
+function isMarketOpen() {
+  const now = new Date();
+  const ist = new Date(now.getTime() + 5.5 * 3600000);
+  const day = ist.getUTCDay();
+  if (day === 0 || day === 6) return false;
+  const mins = ist.getUTCHours() * 60 + ist.getUTCMinutes();
+  return mins >= 555 && mins <= 930;
+}
+
+function smartRefreshTick() {
+  if (!autoRefreshOn) return;
+  if (isMarketOpen()) {
+    fetchLivePrices();
+    el('auto-refresh-status').textContent = 'ON • LIVE 1min';
+  } else {
+    el('auto-refresh-status').textContent = 'ON • MKT CLOSED';
+  }
+}
+
+function toggleAutoRefresh() {
+  autoRefreshOn = !autoRefreshOn;
+  if (autoRefreshOn) {
+    autoRefreshTimer = setInterval(smartRefreshTick, 60000);
+    const status = isMarketOpen() ? 'ON • LIVE 1min' : 'ON • MKT CLOSED';
+    el('auto-refresh-status').textContent = status;
+    if (isMarketOpen()) fetchLivePrices();
+    toast('Auto-refresh ON: every 1 min during NSE hours (9:15-15:30 IST)');
+  } else {
+    clearInterval(autoRefreshTimer);
+    el('auto-refresh-status').textContent = 'OFF';
+    toast('Auto-refresh disabled');
+  }
+}
+
+function renderEqSymbolsList() {
+  const c = el('eq-symbols-list');
+  if (!c) return;
+  c.innerHTML = APP.equity.map((eq,i) =>
+    `<div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">${eq.stock}</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="${eq.yahoo||''}" placeholder="SYMBOL.NS" onchange="APP.equity[${i}].yahoo=this.value;saveState();">
+    </div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+function fmt(n, d=0) {
+  if (n===null||n===undefined||isNaN(n)) return '—';
+  return n.toLocaleString('en-IN',{minimumFractionDigits:d,maximumFractionDigits:d});
+}
+function fmtPnl(n) {
+  if (n===null||isNaN(n)) return '<span style="color:var(--text3)">—</span>';
+  const cls = n>0?'green':n<0?'red':'text3';
+  return `<span class="${cls}">${n>0?'+':''}₹${fmt(n)}</span>`;
+}
+function fmtPct(n) {
+  if (n===null||isNaN(n)) return '—';
+  const cls = n>0?'green':n<0?'red':'text3';
+  return `<span class="${cls}">${(n*100).toFixed(2)}%</span>`;
+}
+function chip(txt,cls) { return `<span class="chip badge-${cls}">${txt}</span>`; }
+function el(id) { return document.getElementById(id); }
+
+function calcPnl(pos) {
+  const dir = pos.bs==='Buy'?1:-1;
+  const netQty = pos.lotSize*pos.lots*dir;
+  if (!pos.ltp||!pos.tradePrice) return null;
+  return (pos.ltp - pos.tradePrice)*netQty;
+}
+
+function calcEquity(eq) {
+  const dir = eq.dir==='Long'?1:-1;
+  const invested = eq.qty*eq.cost;
+  const currVal  = eq.qty*(eq.cmp||eq.cost);
+  const pnl      = (eq.cmp-eq.cost)*eq.qty*dir;
+  const pnlPct   = eq.cost?pnl/invested:0;
+  const delta    = currVal*dir;
+  const betaDelta= delta*(eq.beta||1);
+  return {invested,currVal,pnl,pnlPct,delta,betaDelta};
+}
+
+function vixRegime(vix) {
+  if (vix<13)  return {label:'LOW VOL',  cls:'green',  action:'Premiums thin. Spreads only. Do not tighten strikes. VIX spike is your short-vega enemy.'};
+  if (vix<17)  return {label:'OPTIMAL',  cls:'blue',   action:'Best zone. Full iron condor A&B. Full spreads C D E. Weekly strangles for A.'};
+  if (vix<20)  return {label:'CAUTIOUS', cls:'orange', action:'Stop strangles immediately. Spreads only. Buy 24,500 PE tail hedge for A & B.'};
+  return         {label:'DEFENSIVE', cls:'red',    action:'CLOSE ALL SHORT POSITIONS NOW. Hold NiftyBees only. Re-enter when VIX < 17 for 3 days.'};
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════════════════════════
+function tick() {
+  const now = new Date();
+  const isMarketHours = now.getDay()>0&&now.getDay()<6&&
+    (now.getHours()>9||(now.getHours()===9&&now.getMinutes()>=15))&&
+    (now.getHours()<15||(now.getHours()===15&&now.getMinutes()<=30));
+  el('clock').textContent = now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+' · '+now.toLocaleTimeString('en-IN',{hour12:false});
+}
+setInterval(tick,1000); tick();
+
+// ═══════════════════════════════════════════════════════════════
+// PAGE
+// ═══════════════════════════════════════════════════════════════
+function switchPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  el('page-'+id).classList.add('active');
+  const tabs={dashboard:0,portfolio:1,equity:2,scenario:3,greeks:4,alerts:5,settings:6,sync:7};
+  const idx = tabs[id];
+  if (idx !== undefined) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+  if(id==='settings'){loadSettingsForm();}
+  if(id==='greeks'){renderGreeksDeepDive();}
+  if(id==='sync'){updateSyncUI();}
+}
+
+function toast(msg,err=false) {
+  const t=el('toast'); t.textContent=msg;
+  t.className='toast show'+(err?' error':'');
+  setTimeout(()=>t.className='toast',3000);
+}
+
+function renderAll() {
+  renderDashboard();
+  renderPositions();
+  renderEquity();
+  renderScenario();
+  renderAlerts();
+  renderClientCfg();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════
+function renderDashboard() {
+  const S = APP.settings;
+  let totalOptPnl=0, netDelta=0, netGamma=0, netTheta=0, netVega=0;
+
+  APP.positions.forEach(p=>{
+    const pnl=calcPnl(p); if(pnl!==null) totalOptPnl+=pnl;
+    const g=calcBS(p);
+    netDelta+=g.netDelta; netGamma+=g.netGamma; netTheta+=g.netTheta; netVega+=g.netVega;
+  });
+
+  let totalEqPnl=0,totalEqDelta=0,totalBetaDelta=0;
+  APP.equity.forEach(eq=>{
+    const r=calcEquity(eq);
+    totalEqPnl+=r.pnl; totalEqDelta+=r.delta; totalBetaDelta+=r.betaDelta;
+  });
+
+  const totalPnl=totalOptPnl+totalEqPnl;
+  const nifty=S.nifty||25725;
+
+  // KPIs
+  el('d-nifty').textContent=nifty.toLocaleString('en-IN');
+  const sdMove=Math.round(nifty*(S.vix||12.6)/100*Math.sqrt((S.dte||40)/365));
+  el('d-nifty-sub').textContent=`1 SD: ${(nifty-sdMove).toLocaleString('en-IN')} – ${(nifty+sdMove).toLocaleString('en-IN')}`;
+  el('d-vix').textContent=S.vix||'—';
+  el('d-vix2').textContent=S.vix||'—';
+
+  const regime=vixRegime(S.vix||12.6);
+  el('d-vix-regime').textContent=regime.label+' regime';
+  el('d-vix-badge2').textContent=regime.label;
+  el('d-vix-badge2').className=`badge badge-${regime.cls} mt6`;
+  el('d-vix-action').textContent=regime.action;
+  el('d-vix-action').className=`alert-box ${regime.cls==='red'?'danger':regime.cls==='orange'?'warning':'ok'} mt6`;
+  el('nifty-badge').textContent='NIFTY: '+nifty.toLocaleString('en-IN');
+  el('vix-badge').textContent='VIX: '+(S.vix||'—');
+  el('vix-badge').className=`badge badge-${regime.cls==='green'?'green':regime.cls==='blue'?'blue':regime.cls==='orange'?'orange':'red'}`;
+
+  el('d-opt-pnl').innerHTML=fmtPnl(totalOptPnl);
+  el('d-eq-pnl').innerHTML=fmtPnl(totalEqPnl);
+  el('d-total-pnl').innerHTML=fmtPnl(totalPnl);
+
+  const deltaExp=netDelta*nifty;
+  el('d-net-delta').textContent=fmt(netDelta,2);
+  el('d-delta-exp').innerHTML=`<span class="${deltaExp>=0?'green':'red'}">₹${fmt(Math.abs(deltaExp))}</span>`;
+  el('d-gamma').textContent=fmt(netGamma,4);
+  el('d-gamma').style.color=netGamma<0?'var(--red)':'var(--green)';
+  el('d-theta').textContent='₹'+fmt(netTheta,0);
+  el('d-vega').textContent='₹'+fmt(netVega,0);
+  el('d-eq-delta').textContent='₹'+fmt(totalEqDelta);
+  el('d-eq-beta-delta').textContent='₹'+fmt(totalBetaDelta);
+  const pnl1pct=deltaExp*0.01+totalEqDelta*0.01;
+  el('d-pnl-1pct').textContent='₹'+fmt(pnl1pct);
+  el('d-pnl-1pct').className='kpi-val kpi-xs '+(pnl1pct>=0?'green':'red');
+
+  // DTE
+  const dte=S.dte||40;
+  el('d-dte').textContent=dte+' days';
+  el('d-credit').textContent='₹'+fmt(S.credit||0);
+  const dtePct=Math.max(5,Math.min(95,(1-dte/40)*100));
+  const dteBar=el('d-dte-bar');
+  dteBar.style.width=dtePct+'%';
+  dteBar.className='gauge-fill '+(dte<=7?'gauge-red':dte<=14?'gauge-orange':'gauge-green');
+  el('d-dte-note').textContent=dte<=7?'🚨 DANGER ZONE — Close all positions immediately!':
+    dte<=14?'⚠ Last 2 weeks — daily monitoring, prepare to close':
+    '✓ Theta working in your favour — hold course';
+
+  renderRangeBar(S);
+  renderCalendar(dte,S.credit||0);
+
+  // Mini positions table
+  const miniBody=el('d-positions-mini').querySelector('tbody');
+  miniBody.innerHTML='';
+  APP.positions.forEach(p=>{
+    const pnl=calcPnl(p);
+    const g=calcBS(p);
+    const dir=p.bs==='Buy'?1:-1;
+    miniBody.innerHTML+=`<tr>
+      <td class="mono bold">${p.inst}</td><td>${p.type}</td>
+      <td>${chip(p.bs,p.bs==='Buy'?'green':'orange')}</td>
+      <td class="mono">${p.lotSize*p.lots*dir}</td>
+      <td class="mono ${g.netDelta>=0?'green':'red'}">${fmt(g.netDelta,2)}</td>
+      <td class="mono">${fmtPnl(pnl)}</td>
+    </tr>`;
+  });
+
+  // Client table
+  const clientBody=el('d-client-tbl').querySelector('tbody');
+  clientBody.innerHTML='';
+  APP.clients.forEach(c=>{
+    const creditPct=((c.credit/c.aum)*100).toFixed(3);
+    const ok=c.credit>=c.targetLo;
+    clientBody.innerHTML+=`<tr>
+      <td class="bold mono accent" style="font-size:16px;">${c.id}</td>
+      <td class="mono">₹${fmt(c.aum)}</td>
+      <td style="font-size:10px;">${c.structure}</td>
+      <td class="mono">${c.lots}</td>
+      <td class="mono green">₹${fmt(c.credit)}</td>
+      <td class="mono">₹${fmt(c.targetLo)}</td>
+      <td class="mono">₹${fmt(c.targetHi)}</td>
+      <td class="mono ${ok?'green':'orange'}">${creditPct}%</td>
+      <td>${chip(ok?'ON TRACK':'BUILDING',ok?'green':'orange')}</td>
+    </tr>`;
+  });
+}
+
+function renderRangeBar(S) {
+  const nifty=S.nifty||25725;
+  const lPE=S.longPE||24800,sPE=S.shortPE||25200;
+  const sCE=S.shortCE||26200,lCE=S.longCE||26500;
+  const min=lPE-300,max=lCE+300;
+  const pct=((nifty-min)/(max-min)*100);
+  el('range-pin').style.left=Math.max(2,Math.min(98,pct))+'%';
+  el('range-pin-lbl').textContent=nifty.toLocaleString('en-IN');
+  el('range-ticks').innerHTML=[lPE,sPE,Math.round((sPE+sCE)/2),sCE,lCE].map(t=>
+    `<span style="font-family:var(--mono);font-size:8px;color:var(--text3);">${t.toLocaleString('en-IN')}</span>`
+  ).join('');
+}
+
+function renderCalendar(dte,credit) {
+  const total=40,elapsed=total-dte,danger=total-7;
+  const wrap=el('cal-wrap'); wrap.innerHTML='';
+  for(let i=1;i<=total;i++){
+    const d=document.createElement('div');
+    if(i===total){d.className='cal-day cal-expiry';d.textContent='EXP';}
+    else if(i<elapsed){d.className='cal-day cal-elapsed';d.textContent=i;}
+    else if(i===elapsed){d.className='cal-day cal-today';d.textContent='NOW';}
+    else if(i>=danger){d.className='cal-day cal-danger';d.textContent=i;}
+    else{d.className='cal-day cal-remaining';d.textContent=i;}
+    wrap.appendChild(d);
+  }
+  const decayed=Math.round(credit*elapsed/total);
+  const sum=el('cal-summary');
+  if(dte<=7){sum.className='alert-box danger';sum.textContent='🚨 DANGER ZONE — Close all positions immediately. Gamma spikes unpredictably.';}
+  else{sum.className='alert-box info';sum.textContent=`Day ${elapsed}/${total} · Credit decayed: ₹${fmt(decayed)} · Remaining: ₹${fmt(credit-decayed)} · ${dte<=14?'⚠ Approaching danger zone':'✓ Hold course'}`;}
+}
+
+// ═══════════════════════════════════════════════════════════════
+// POSITIONS
+// ═══════════════════════════════════════════════════════════════
+function renderPositions() {
+  const body=el('opt-body'); body.innerHTML='';
+  let totalPnl=0,netDelta=0,netGamma=0,netTheta=0,netVega=0;
+
+  // Update the live Greeks status badges
+  const spotB=el('greeks-spot-badge'), ivB=el('greeks-iv-badge'), dteB=el('greeks-dte-badge');
+  if(spotB) {
+    const sp=APP.settings.nifty;
+    spotB.textContent='SPOT: '+(sp?sp.toLocaleString('en-IN'):'—');
+    spotB.className='badge '+(sp?'badge-blue':'badge-gray');
+  }
+  if(ivB) {
+    if(APP.settings.useLiveVix && APP.settings.vix) {
+      ivB.textContent='IV: VIX '+APP.settings.vix+'%';
+      ivB.className='badge badge-orange';
+    } else {
+      ivB.textContent='IV: ENTRY (manual)';
+      ivB.className='badge badge-gray';
+    }
+  }
+  if(dteB) {
+    const sampleDTE = APP.positions.length>0 ? Math.ceil(calcDTE(APP.positions.find(p=>p.expiry)||APP.positions[0])) : '—';
+    dteB.textContent='DTE: auto ('+sampleDTE+'d to expiry)';
+    dteB.className='badge badge-accent';
+  }
+
+  APP.positions.forEach((p,idx)=>{
+    const dir=p.bs==='Buy'?1:-1;
+    const netQty=p.lotSize*p.lots*dir;
+    const pnl=calcPnl(p); if(pnl!==null) totalPnl+=pnl;
+    const g=calcBS(p);
+    netDelta+=g.netDelta; netGamma+=g.netGamma; netTheta+=g.netTheta; netVega+=g.netVega;
+
+    body.innerHTML+=`<tr>
+      <td class="mono">${idx+1}</td>
+      <td class="bold">${p.inst}</td><td>${p.type}</td>
+      <td>${chip(p.bs,p.bs==='Buy'?'green':'orange')}</td>
+      <td class="mono">${fmt(p.spot)}</td>
+      <td class="mono">${p.strike?fmt(p.strike):'—'}</td>
+      <td class="mono" title="${APP.settings.useLiveVix ? 'Using live VIX: '+APP.settings.vix+'%' : 'Entry IV: '+(p.iv||'—')}"><span style="${APP.settings.useLiveVix?'color:var(--orange);font-size:9px;':''}">${APP.settings.useLiveVix?'⚡':''}</span>${APP.settings.useLiveVix ? fmt(APP.settings.vix,1)+'%' : (p.iv ? p.iv+'%' : '—')}</td>
+      <td class="mono accent" title="Expiry: ${p.expiry||'-'} (auto-calculates daily)">${Math.ceil(calcDTE(p))}</td>
+      <td class="mono">${p.lotSize}</td><td class="mono">${p.lots}</td>
+      <td class="mono bold ${netQty>0?'green':'orange'}">${netQty}</td>
+      <td class="mono">₹${fmt(p.tradePrice,2)}</td>
+      <td class="mono accent">₹${fmt(p.ltp,2)}</td>
+      <td class="mono ${g.netDelta>=0?'green':'red'}">${fmt(g.netDelta,3)}</td>
+      <td class="mono ${g.netGamma>=0?'green':'red'}">${fmt(g.netGamma,5)}</td>
+      <td class="mono ${g.netTheta>=0?'green':'red'}">₹${fmt(g.netTheta,0)}</td>
+      <td class="mono ${g.netVega>=0?'green':'red'}">₹${fmt(g.netVega,0)}</td>
+      <td class="mono">${fmtPnl(pnl)}</td>
+      <td style="font-size:10px;color:var(--text3);">${p.notes||''}</td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editPosition(${idx})">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deletePosition(${idx})">DEL</button>
+      </td>
+    </tr>`;
+  });
+
+  el('opt-total-pnl').innerHTML=fmtPnl(totalPnl);
+  el('p-delta').textContent=fmt(netDelta,3);
+  el('p-theta').textContent='₹'+fmt(netTheta,0);
+  el('p-gamma').textContent=fmt(netGamma,5);
+  el('p-vega').textContent='₹'+fmt(netVega,0);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EQUITY
+// ═══════════════════════════════════════════════════════════════
+function renderEquity() {
+  const body=el('eq-body'); body.innerHTML='';
+  let totInv=0,totCurr=0,totPnl=0,totDelta=0,totBeta=0;
+  APP.equity.forEach((eq,idx)=>{
+    const r=calcEquity(eq);
+    totInv+=r.invested;totCurr+=r.currVal;totPnl+=r.pnl;totDelta+=r.delta;totBeta+=r.betaDelta;
+    body.innerHTML+=`<tr>
+      <td class="mono">${idx+1}</td><td class="bold">${eq.stock}</td>
+      <td style="font-size:10px;">${eq.exch}</td>
+      <td>${chip(eq.dir,eq.dir==='Long'?'green':'red')}</td>
+      <td class="mono">${fmt(eq.qty)}</td>
+      <td class="mono">₹${fmt(eq.cost,2)}</td>
+      <td class="mono accent">₹${fmt(eq.cmp,2)}</td>
+      <td class="mono">${eq.beta}</td>
+      <td class="mono">₹${fmt(r.invested)}</td>
+      <td class="mono">₹${fmt(r.currVal)}</td>
+      <td class="mono">${fmtPnl(r.pnl)}</td>
+      <td class="mono">${fmtPct(r.pnlPct)}</td>
+      <td class="mono">₹${fmt(r.delta)}</td>
+      <td class="mono">₹${fmt(r.betaDelta)}</td>
+      <td style="font-size:10px;">${eq.sector||''}</td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(${idx})">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(${idx})">DEL</button>
+      </td>
+    </tr>`;
+  });
+  el('eq-t-inv').textContent='₹'+fmt(totInv);
+  el('eq-t-curr').textContent='₹'+fmt(totCurr);
+  el('eq-t-pnl').innerHTML=fmtPnl(totPnl);
+  el('eq-t-pnlpct').innerHTML=fmtPct(totPnl/(totInv||1));
+  el('eq-t-delta').textContent='₹'+fmt(totDelta);
+  el('eq-t-betadelta').textContent='₹'+fmt(totBeta);
+  el('e-inv').textContent='₹'+fmt(totInv);
+  el('e-curr').textContent='₹'+fmt(totCurr);
+  el('e-pnl').innerHTML=fmtPnl(totPnl);
+  el('e-beta').textContent='₹'+fmt(totBeta);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCENARIO — FULL BS P&L + DYNAMIC GREEKS
+// ═══════════════════════════════════════════════════════════════
+function renderScenario() {
+  const moves=[-0.10,-0.05,-0.03,-0.02,-0.01,0,0.01,0.02,0.03,0.05,0.10,0.15];
+  const nifty=APP.settings.nifty||25725;
+
+  // ── P&L Table ──
+  let html='<thead><tr><th class="lbl">POSITION</th>';
+  moves.forEach(m=>{
+    const isZero=m===0;
+    html+=`<th class="${isZero?'highlight':''}">${m>0?'+':''}${(m*100).toFixed(0)}%</th>`;
+  });
+  html+='</tr><tr><th class="lbl" style="color:var(--text3);font-size:9px;">Nifty spot</th>';
+  moves.forEach(m=>{
+    const s=Math.round(nifty*(1+m));
+    html+=`<td class="${m===0?'highlight':''}" style="text-align:center;font-size:9px;color:var(--text3);">${s.toLocaleString('en-IN')}</td>`;
+  });
+  html+='</tr></thead><tbody>';
+
+  let optTotals=new Array(moves.length).fill(0);
+  let eqTotals =new Array(moves.length).fill(0);
+
+  // Options/Futures: full BS P&L = (BS price at scenario spot − entry BS price) × net qty
+  APP.positions.forEach(p=>{
+    const dir=p.bs==='Buy'?1:-1;
+    const netQty=p.lotSize*p.lots*dir;
+    const label=`${p.inst} ${p.type} ${p.bs} x${p.lots}L`;
+    const entryBsPrice=p.type==='Future'?(p.spot||nifty):bsPrice(p,p.spot||nifty);
+
+    html+=`<tr><td class="lbl">${label}</td>`;
+    moves.forEach((m,mi)=>{
+      const scenSpot=nifty*(1+m);
+      let pnl;
+      if(p.type==='Future'){
+        pnl=(scenSpot-(p.spot||nifty))*netQty;
+      } else {
+        const scen=bsPrice(p,scenSpot);
+        pnl=(scen-entryBsPrice)*netQty;
+      }
+      optTotals[mi]+=pnl;
+      html+=`<td class="${pnl>50?'pos':pnl<-50?'neg':'zero'}${m===0?' highlight':''}">${pnl>0?'+':''}${fmt(pnl)}</td>`;
+    });
+    html+='</tr>';
+  });
+
+  // Equity: CMP × beta × move%
+  APP.equity.forEach(eq=>{
+    const r=calcEquity(eq);
+    const label=`${eq.stock} ${eq.dir} x${eq.qty}sh`;
+    html+=`<tr><td class="lbl" style="color:var(--green);">${label}</td>`;
+    moves.forEach((m,mi)=>{
+      const pnl=r.delta*m;
+      eqTotals[mi]+=pnl;
+      html+=`<td class="${pnl>50?'pos':pnl<-50?'neg':'zero'}${m===0?' highlight':''}">${pnl>0?'+':''}${fmt(pnl)}</td>`;
+    });
+    html+='</tr>';
+  });
+
+  // Totals
+  html+='<tr class="total-row"><td class="lbl">OPT/FUT TOTAL</td>';
+  optTotals.forEach((v,mi)=>{html+=`<td class="${v>0?'pos':v<0?'neg':'zero'}${mi===5?' highlight':''}">${v>0?'+':''}₹${fmt(v)}</td>`;});
+  html+='</tr><tr class="total-row"><td class="lbl" style="color:var(--green);">EQUITY TOTAL</td>';
+  eqTotals.forEach((v,mi)=>{html+=`<td class="${v>0?'pos':v<0?'neg':'zero'}${mi===5?' highlight':''}">${v>0?'+':''}₹${fmt(v)}</td>`;});
+  html+='</tr><tr class="total-row" style="background:rgba(0,200,255,.05);"><td class="lbl" style="color:var(--accent);">⭐ COMBINED</td>';
+  moves.forEach((m,mi)=>{
+    const v=optTotals[mi]+eqTotals[mi];
+    html+=`<td class="${v>0?'pos':v<0?'neg':'zero'}${mi===5?' highlight':''}" style="font-weight:700;">${v>0?'+':''}₹${fmt(v)}</td>`;
+  });
+  html+='</tr></tbody>';
+  el('scen-tbl').innerHTML=html;
+
+  // ── DYNAMIC GREEKS TABLE — fully recalculated at each spot ──
+  let ghtml='<thead><tr><th class="lbl">GREEK AT SPOT →</th>';
+  moves.forEach(m=>{ghtml+=`<th class="${m===0?'highlight':''}">${m>0?'+':''}${(m*100).toFixed(0)}%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">${Math.round(nifty*(1+m)).toLocaleString('en-IN')}</span></th>`;});
+  ghtml+='</tr></thead><tbody>';
+
+  const greekDefs=[
+    {
+      lbl:'Net Delta (units)',
+      hint:'Delta of entire options/futures book recalculated at each spot via Black-Scholes. Changes because of gamma.',
+      fn:(scen)=>{
+        let d=0;
+        APP.positions.forEach(p=>{ const g=calcBS(p,scen); d+=g.netDelta; });
+        return {val:d,fmt:v=>fmt(v,3),color:v=>v>=0?'var(--green)':'var(--red)'};
+      }
+    },
+    {
+      lbl:'Delta Change vs 0%',
+      hint:'Change in net delta from current spot. Negative = delta falling (options hedging the future). Positive = delta rising (unhedged).',
+      fn:(scen,baseD)=>{
+        let d=0;
+        APP.positions.forEach(p=>{ const g=calcBS(p,scen); d+=g.netDelta; });
+        const chg=d-baseD;
+        // Green = delta falling (puts/calls reducing exposure) = good hedge
+        // Red = delta rising (exposure increasing = more unhedged)
+        return {val:chg,fmt:v=>(v>0?'+':'')+fmt(v,3),color:v=>v<0?'var(--green)':'var(--red)'};
+      }
+    },
+    {
+      lbl:'Delta Exp ₹ (Opt/Fut)',
+      hint:'Net delta × scenario spot = signed ₹ directional exposure. Positive = net long bias. Watch how puts reduce this on downmoves.',
+      fn:(scen)=>{
+        let d=0;
+        APP.positions.forEach(p=>{ const g=calcBS(p,scen); d+=g.netDelta; });
+        const exp=d*scen;
+        // Show signed value with sign indicator
+        return {val:exp,fmt:v=>(v>=0?'+':'')+'₹'+fmt(v),color:v=>v>=0?'var(--green)':'var(--red)'};
+      }
+    },
+    {
+      lbl:'Net Gamma',
+      hint:'Rate of delta change. Negative (short gamma) means your delta worsens as spot moves away from strikes.',
+      fn:(scen)=>{
+        let g2=0;
+        APP.positions.forEach(p=>{ const g=calcBS(p,scen); g2+=g.netGamma; });
+        return {val:g2,fmt:v=>fmt(v,5),color:v=>v>=0?'var(--green)':'var(--red)'};
+      }
+    },
+    {
+      lbl:'Net Theta / Day ₹',
+      hint:'Daily time decay at each scenario. Theta increases as options approach ATM.',
+      fn:(scen)=>{
+        let t=0;
+        APP.positions.forEach(p=>{ const g=calcBS(p,scen); t+=g.netTheta; });
+        return {val:t,fmt:v=>'₹'+fmt(v,0),color:v=>v>=0?'var(--green)':'var(--red)'};
+      }
+    },
+    {
+      lbl:'Net Vega / 1% IV ₹',
+      hint:'Sensitivity to a 1% IV (VIX) change at each scenario. Negative = VIX spike hurts.',
+      fn:(scen)=>{
+        let v2=0;
+        APP.positions.forEach(p=>{ const g=calcBS(p,scen); v2+=g.netVega; });
+        return {val:v2,fmt:v=>'₹'+fmt(v,0),color:v=>v>=0?'var(--green)':'var(--red)'};
+      }
+    },
+    {
+      lbl:'Equity Delta ₹',
+      hint:'NiftyBees + ETF exposure changes linearly (beta × price × move). Not BS-driven.',
+      fn:(scen)=>{
+        let d=0;
+        APP.equity.forEach(eq=>{ const r=calcEquity(eq); d+=r.delta*(scen/nifty); });
+        return {val:d,fmt:v=>'₹'+fmt(v),color:_=>'var(--green)'};
+      }
+    },
+    {
+      lbl:'COMBINED Delta ₹',
+      hint:'Options/Futures delta exposure + Equity delta at each scenario. Positive = net long. Negative = net short.',
+      fn:(scen)=>{
+        let optD=0,eqD=0;
+        APP.positions.forEach(p=>{ const g=calcBS(p,scen); optD+=g.netDelta; });
+        APP.equity.forEach(eq=>{ const r=calcEquity(eq); eqD+=r.delta*(scen/nifty); });
+        const total=optD*scen+eqD;
+        return {val:total,fmt:v=>(v>=0?'+':'')+'₹'+fmt(v),color:v=>v>=0?'var(--accent)':'var(--orange)'};
+      }
+    },
+  ];
+
+  // Calculate base delta at 0% for delta-change row
+  let baseDelta=0;
+  APP.positions.forEach(p=>{ const g=calcBS(p,nifty); baseDelta+=g.netDelta; });
+
+  greekDefs.forEach((row,ri)=>{
+    ghtml+=`<tr><td class="lbl" title="${row.hint}">${row.lbl}<br><span style="font-size:8px;color:var(--text3);">${row.hint.substring(0,50)}...</span></td>`;
+    moves.forEach((m,mi)=>{
+      const scen=nifty*(1+m);
+      const result=row.fn(scen,baseDelta);
+      ghtml+=`<td class="${mi===5?'highlight':''}" style="color:${result.color(result.val)};font-weight:${mi===5?'700':'400'};">${result.fmt(result.val)}</td>`;
+    });
+    ghtml+='</tr>';
+  });
+  ghtml+='</tbody>';
+  el('scen-greeks-tbl').innerHTML=ghtml;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GREEKS DEEP DIVE PAGE
+// ═══════════════════════════════════════════════════════════════
+function renderGreeksDeepDive() {
+  const nifty=APP.settings.nifty||25725;
+
+  // Full per-position Greeks table
+  const body=el('greeks-body'); body.innerHTML='';
+  let totDelta=0,totGamma=0,totTheta=0,totVega=0;
+
+  APP.positions.forEach((p,idx)=>{
+    const g=calcBS(p);
+    const dir=p.bs==='Buy'?1:-1;
+    const netQty=p.lotSize*p.lots*dir;
+    totDelta+=g.netDelta; totGamma+=g.netGamma; totTheta+=g.netTheta; totVega+=g.netVega;
+
+    body.innerHTML+=`<tr>
+      <td class="mono">${idx+1}</td>
+      <td class="bold">${p.inst}</td><td>${p.type}</td>
+      <td>${chip(p.bs,p.bs==='Buy'?'green':'orange')}</td>
+      <td class="mono">${netQty}</td>
+      <td class="mono">${fmt(p.spot)}</td>
+      <td class="mono">${p.strike?fmt(p.strike):'Future'}</td>
+      <td class="mono">${p.iv?p.iv+'%':'—'}</td>
+      <td class="mono">${p.dteCurr??p.dte}</td>
+      <td class="mono accent">₹${fmt(g.price,2)}</td>
+      <td class="mono">${fmt(g.deltaUnit,4)}</td>
+      <td class="mono bold ${g.netDelta>=0?'green':'red'}">${fmt(g.netDelta,3)}</td>
+      <td class="mono">${g.netGamma?fmt(g.netGamma,6):'—'}</td>
+      <td class="mono ${g.netGamma>=0?'green':'red'}">${g.netGamma?fmt(g.netGamma,5):'—'}</td>
+      <td class="mono ${g.netTheta>=0?'green':'red'}">₹${fmt(g.netTheta,0)}/day</td>
+      <td class="mono ${g.netVega>=0?'green':'red'}">₹${fmt(g.netVega,0)}</td>
+    </tr>`;
+  });
+  el('g-net-delta').textContent=fmt(totDelta,3);
+  el('g-net-gamma').textContent=fmt(totGamma,5);
+  el('g-net-theta').textContent='₹'+fmt(totTheta,0)+'/day';
+  el('g-net-vega').textContent='₹'+fmt(totVega,0);
+
+  // Delta sensitivity table — small moves around spot
+  const smallMoves=[-0.05,-0.04,-0.03,-0.02,-0.01,0,0.01,0.02,0.03,0.04,0.05];
+  let dtbl='<thead><tr><th class="lbl">POSITION</th>';
+  smallMoves.forEach(m=>{ dtbl+=`<th class="${m===0?'highlight':''}">${m>0?'+':''}${(m*100).toFixed(0)}%</th>`; });
+  dtbl+='</tr></thead><tbody>';
+  let netDeltas=new Array(smallMoves.length).fill(0);
+  APP.positions.forEach(p=>{
+    const dir=p.bs==='Buy'?1:-1;
+    const label=`${p.inst} ${p.type} ${p.bs} x${p.lots}L`;
+    dtbl+=`<tr><td class="lbl">${label}</td>`;
+    smallMoves.forEach((m,mi)=>{
+      const scen=nifty*(1+m);
+      const g=calcBS(p,scen);
+      netDeltas[mi]+=g.netDelta;
+      dtbl+=`<td class="${m===0?'highlight':''}" style="color:${g.netDelta>=0?'var(--green)':'var(--red)'}">${fmt(g.netDelta,3)}</td>`;
+    });
+    dtbl+='</tr>';
+  });
+  dtbl+='<tr class="total-row"><td class="lbl">NET PORTFOLIO DELTA</td>';
+  netDeltas.forEach((v,mi)=>{
+    dtbl+=`<td class="${mi===5?'highlight':''}" style="color:${v>=0?'var(--green)':'var(--red)'};">${fmt(v,3)}</td>`;
+  });
+  dtbl+='</tr></tbody>';
+  el('delta-scen-tbl').innerHTML=dtbl;
+
+  // Live Greeks summary card
+  el('greeks-live-table').innerHTML=`
+    <div style="background:var(--bg3);border:1px solid var(--border);padding:14px;">
+      <div class="stitle mb0">LIVE GREEKS AT NIFTY ${nifty.toLocaleString('en-IN')}</div>
+      <div style="margin-top:12px;display:grid;gap:10px;">
+        ${[
+          {label:'Net Delta',val:fmt(totDelta,3),sub:'Total directional units',color:totDelta>=0?'var(--green)':'var(--red)'},
+          {label:'Net Gamma',val:fmt(totGamma,5),sub:'Delta change rate (negative = risky)',color:totGamma>=0?'var(--green)':'var(--red)'},
+          {label:'Net Theta/Day',val:'₹'+fmt(totTheta,0),sub:'Daily time decay income',color:totTheta>=0?'var(--green)':'var(--red)'},
+          {label:'Net Vega/1%IV',val:'₹'+fmt(totVega,0),sub:'VIX 1% move impact',color:totVega>=0?'var(--green)':'var(--red)'},
+        ].map(r=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);">
+            <div><div style="font-family:var(--mono);font-size:9px;color:var(--text3);">${r.label}</div><div style="font-size:10px;color:var(--text3);">${r.sub}</div></div>
+            <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:${r.color};">${r.val}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ALERTS
+// ═══════════════════════════════════════════════════════════════
+function renderAlerts() {
+  const S=APP.settings;
+  const nifty=S.nifty||25725,vix=S.vix||12.6,dte=S.dte||40;
+
+  const alerts=[
+    {title:'PUT SIDE STOP-LOSS',level:S.shortPE,triggered:nifty<S.shortPE,near:nifty<S.shortPE+300,action:'Close short PE for ALL 5 clients immediately. Do not wait for EOD.',type:'danger'},
+    {title:'CALL SIDE STOP-LOSS',level:S.shortCE,triggered:nifty>S.shortCE,near:nifty>S.shortCE-300,action:'Close short CE for A & B. C, D, E have no short calls — hold.',type:'danger'},
+    {title:'VIX ALERT',level:vix,triggered:vix>=20,near:vix>=17,action:vixRegime(vix).action,type:vix<13?'ok':vix<17?'ok':vix<20?'warning':'danger'},
+    {title:'DTE DANGER ZONE',level:dte+' days left',triggered:dte<=7,near:dte<=14,action:dte<=7?'CLOSE ALL open options now.':dte<=14?'Increase monitoring. Prepare exit plan.':'Hold. Theta in your favour.',type:dte<=7?'danger':dte<=14?'warning':'ok'},
+    {title:'PROFIT BOOKING',level:'70% of credit',triggered:false,near:false,action:'When 70% of max credit captured → close and redeploy into next expiry.',type:'info'},
+    {title:'MARGIN UTILISATION',level:'< 80%',triggered:false,near:false,action:'If any account hits 85% margin, close the most OTM leg first.',type:'ok'},
+  ];
+
+  const aEl=el('alert-list'); aEl.innerHTML='';
+  alerts.forEach(a=>{
+    const cls=a.triggered?'danger':a.near?'warning':a.type==='ok'?'ok':'info';
+    const badge=a.triggered?'🚨 TRIGGERED':a.near?'⚠ NEAR':'✓ CLEAR';
+    aEl.innerHTML+=`<div class="alert-box ${cls} mb8">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <strong>${a.title}</strong>
+        <span style="font-family:var(--mono);font-size:9px;">${badge}</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:13px;margin-bottom:5px;">${typeof a.level==='number'?a.level.toLocaleString('en-IN'):a.level}</div>
+      <div style="font-size:10px;"><strong>ACTION:</strong> ${a.action}</div>
+    </div>`;
+  });
+
+  const levels=[
+    {name:'Long PE Hedge Floor',price:S.longPE,side:'support'},
+    {name:'Short PE — EXIT TRIGGER',price:S.shortPE,side:'support'},
+    {name:'Short PE +200 Buffer',price:S.shortPE+200,side:'support'},
+    {name:'NIFTY SPOT',price:nifty,side:'neutral'},
+    {name:'Spread Midpoint',price:Math.round((S.shortPE+S.shortCE)/2),side:'neutral'},
+    {name:'Short CE −200 Buffer',price:S.shortCE-200,side:'resist'},
+    {name:'Short CE — EXIT TRIGGER',price:S.shortCE,side:'resist'},
+    {name:'Long CE Hedge Cap',price:S.longCE,side:'resist'},
+  ];
+  const lEl=el('level-list'); lEl.innerHTML='';
+  levels.forEach(lv=>{
+    const diff=nifty-lv.price;
+    const pct=((Math.abs(diff)/nifty)*100).toFixed(2);
+    const breached=(lv.side==='support'&&nifty<lv.price)||(lv.side==='resist'&&nifty>lv.price);
+    const cls=breached?'danger':lv.side==='support'?'warning':lv.side==='resist'?'warning':'info';
+    lEl.innerHTML+=`<div class="alert-box ${cls} mb8">
+      <div style="display:flex;justify-content:space-between;">
+        <strong>${lv.name}</strong>
+        <span style="font-family:var(--mono);font-size:13px;">${lv.price.toLocaleString('en-IN')}</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;margin-top:3px;color:var(--text3);">
+        ${lv.price===nifty?'◉ CURRENT':`${diff>0?'▲':'▼'} ${Math.abs(diff).toLocaleString('en-IN')} pts (${pct}%) ${diff>0?'above':'below'} spot`}
+        ${breached?' — 🚨 BREACHED':''}
+      </div>
+    </div>`;
+  });
+
+  const rules=[
+    {cls:'danger',text:'<strong>Never hold past 7 DTE.</strong> Close ALL positions 7 days before expiry. Gamma spikes unpredictably. No exceptions ever.'},
+    {cls:'warning',text:'<strong>70% profit = close.</strong> Book it. Do not hold for last 30% — gamma and weekend risk are not worth it.'},
+    {cls:'danger',text:'<strong>Nifty below Short PE = exit immediately.</strong> No averaging. No waiting.'},
+    {cls:'warning',text:'<strong>Nifty above Short CE = exit CE for A & B.</strong> C, D, E have no short calls — they hold.'},
+    {cls:'warning',text:'<strong>VIX > 17 = stop strangles.</strong> Spreads only. Buy 24,500 PE tail hedge for A & B.'},
+    {cls:'ok',text:'<strong>Margin < 80% always.</strong> Close most OTM leg if any account hits 85%.'},
+    {cls:'info',text:'<strong>No stock selection.</strong> Alpha comes from the options structure. NiftyBees + ETF core only.'},
+  ];
+  const rEl=el('rules-list'); rEl.innerHTML='';
+  rules.forEach(r=>{ rEl.innerHTML+=`<div class="alert-box ${r.cls} mb8">${r.text}</div>`; });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════════════════
+function loadSettingsForm() {
+  const S=APP.settings;
+  const map={nifty:'s-nifty',vix:'s-vix',dte:'s-dte',credit:'s-credit',rfr:'s-rfr',defIV:'s-div',shortPE:'s-short-pe',longPE:'s-long-pe',shortCE:'s-short-ce',longCE:'s-long-ce'};
+  // Expiry date and live VIX toggle
+  const exp = el('s-default-expiry'); if(exp) exp.value = S.defaultExpiry||'2026-03-26';
+  const vixCb = el('s-use-vix'); if(vixCb) vixCb.checked = !!S.useLiveVix;
+  Object.entries(map).forEach(([k,id])=>{ const e=el(id); if(e&&S[k]!==undefined) e.value=S[k]; });
+  renderClientCfg();
+  renderEqSymbolsList();
+  updateStorageInfo();
+}
+
+function saveSettings() {
+  const g=id=>parseFloat(el(id).value)||0;
+  // IMPORTANT: merge into existing settings — don't overwrite useLiveVix/defaultExpiry
+  Object.assign(APP.settings, {
+    nifty:g('s-nifty'), vix:g('s-vix'), dte:g('s-dte'), credit:g('s-credit'),
+    rfr:g('s-rfr'), defIV:g('s-div'),
+    shortPE:g('s-short-pe'), longPE:g('s-long-pe'),
+    shortCE:g('s-short-ce'), longCE:g('s-long-ce'),
+    defaultExpiry: el('s-default-expiry').value || '2026-03-26',
+    useLiveVix: el('s-use-vix').checked,
+  });
+  // Update expiry on all positions that don't have one yet
+  APP.positions.forEach(p => { if (!p.expiry) p.expiry = APP.settings.defaultExpiry; });
+  saveState(); renderAll(); toast('Settings saved ✓');
+}
+
+function loadDefaults() {
+  APP={settings:{...DEFAULT_SETTINGS},positions:JSON.parse(JSON.stringify(DEFAULT_POSITIONS)),equity:JSON.parse(JSON.stringify(DEFAULT_EQUITY)),clients:JSON.parse(JSON.stringify(DEFAULT_CLIENTS))};
+  saveState(); loadSettingsForm(); renderAll(); toast('Defaults loaded ✓');
+}
+
+function renderClientCfg() {
+  const body=el('client-cfg-body'); if(!body) return; body.innerHTML='';
+  APP.clients.forEach((c,idx)=>{
+    body.innerHTML+=`<tr>
+      <td class="bold accent mono" style="font-size:16px;">${c.id}</td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:110px;" value="${c.aum}" onchange="APP.clients[${idx}].aum=+this.value;saveState();renderAll();"></td>
+      <td class="mono">${c.lots}</td>
+      <td style="font-size:10px;">${c.structure}</td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:90px;" value="${c.targetLo}" onchange="APP.clients[${idx}].targetLo=+this.value;saveState();renderAll();"></td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:90px;" value="${c.targetHi}" onchange="APP.clients[${idx}].targetHi=+this.value;saveState();renderAll();"></td>
+    </tr>`;
+  });
+}
+
+function updateStorageInfo() {
+  try {
+    const raw=localStorage.getItem(STORAGE_KEY)||'';
+    const fbStatus = fbConnected ? ' · ☁ Firebase sync ON' : ' · ☁ Firebase not connected';
+    el('storage-info').textContent=`localStorage · ${(raw.length/1024).toFixed(1)} KB · Persists across sessions${fbStatus}`;
+  } catch(e){}
+}
+
+// ═══════════════════════════════════════════════════════════════
+// POSITION CRUD
+// ═══════════════════════════════════════════════════════════════
+// Open modal for a fresh ADD — resets all fields to blank/defaults
+function openModal(type) {
+  if(type==='opt'){
+    el('opt-edit-idx').value=''; // blank = new
+    el('f-inst').value='NIFTY';
+    el('f-type').value='Call';
+    el('f-bs').value='Sell';
+    el('f-spot').value=APP.settings.nifty||'';
+    el('f-strike').value='';
+    el('f-iv').value=APP.settings.defIV||12.6;
+    el('f-dte').value='';
+    el('f-expiry').value=APP.settings.defaultExpiry||'2026-03-26';
+    el('f-lotsize').value=65;
+    el('f-lots').value=1;
+    el('f-tradeprice').value='';
+    el('f-ltp').value='';
+    el('f-notes').value='';
+    el('modal-title-opt').textContent='ADD NEW OPTION OR FUTURE';
+  }
+  if(type==='eq'){
+    el('eq-edit-idx').value='';
+    el('ef-stock').value=''; el('ef-yahoo').value='';
+    el('ef-exch').value='NSE'; el('ef-dir').value='Long';
+    el('ef-qty').value=''; el('ef-cost').value='';
+    el('ef-cmp').value=''; el('ef-beta').value=1;
+    el('ef-sector').value=''; el('ef-notes').value='';
+    el('modal-title-eq').textContent='ADD NEW EQUITY POSITION';
+  }
+  el('modal-'+type).classList.add('open');
+}
+
+function closeModal(type){el('modal-'+type).classList.remove('open');}
+
+function savePosition() {
+  const idx=el('opt-edit-idx').value;
+  const pos={
+    inst:el('f-inst').value, type:el('f-type').value, bs:el('f-bs').value,
+    spot:+el('f-spot').value, strike:+el('f-strike').value||null,
+    iv:+el('f-iv').value||null, dte:+el('f-dte').value,
+    expiry:el('f-expiry').value||(APP.settings.defaultExpiry||'2026-03-26'),
+    lotSize:+el('f-lotsize').value, lots:+el('f-lots').value,
+    tradePrice:+el('f-tradeprice').value, ltp:+el('f-ltp').value,
+    notes:el('f-notes').value,
+  };
+  if(idx!=='') APP.positions[+idx]=pos; else APP.positions.push(pos);
+  closeModal('opt'); saveState(); renderAll(); toast(idx!==''?'Position updated ✓':'Position added ✓');
+}
+
+// editPosition: loads existing data into form WITHOUT resetting anything
+function editPosition(idx) {
+  const p=APP.positions[idx];
+  // Set the edit index FIRST
+  el('opt-edit-idx').value=idx;
+  // Populate every field from saved position — no defaults injected
+  el('f-inst').value=p.inst;
+  el('f-type').value=p.type;
+  el('f-bs').value=p.bs;
+  el('f-spot').value=p.spot;
+  el('f-strike').value=p.strike!==null&&p.strike!==undefined?p.strike:'';
+  el('f-iv').value=p.iv!==null&&p.iv!==undefined?p.iv:'';
+  el('f-dte').value=p.dte!==null&&p.dte!==undefined?p.dte:'';
+  el('f-expiry').value=p.expiry||APP.settings.defaultExpiry||'2026-03-26';
+  el('f-lotsize').value=p.lotSize;
+  el('f-lots').value=p.lots;
+  el('f-tradeprice').value=p.tradePrice!==null&&p.tradePrice!==undefined?p.tradePrice:'';
+  el('f-ltp').value=p.ltp!==null&&p.ltp!==undefined?p.ltp:'';
+  el('f-notes').value=p.notes||'';
+  // Update modal title to show it's an edit
+  el('modal-title-opt').textContent=`EDIT POSITION #${idx+1} — ${p.inst} ${p.type} ${p.bs}`;
+  // Open WITHOUT resetting
+  el('modal-opt').classList.add('open');
+}
+function deletePosition(idx){if(!confirm('Delete?'))return;APP.positions.splice(idx,1);saveState();renderAll();toast('Deleted');}
+function clearAllPositions(){if(!confirm('Clear ALL positions?'))return;APP.positions=[];saveState();renderAll();toast('Cleared');}
+
+function saveEquity() {
+  const idx=el('eq-edit-idx').value;
+  const eq={
+    stock:el('ef-stock').value, yahoo:el('ef-yahoo').value, exch:el('ef-exch').value,
+    dir:el('ef-dir').value, qty:+el('ef-qty').value,
+    cost:+el('ef-cost').value, cmp:+el('ef-cmp').value,
+    beta:+el('ef-beta').value||1, sector:el('ef-sector').value, notes:el('ef-notes').value,
+  };
+  if(idx!=='') APP.equity[+idx]=eq; else APP.equity.push(eq);
+  closeModal('eq'); saveState(); renderAll(); renderEqSymbolsList(); toast('Stock saved ✓');
+}
+function editEquity(idx){
+  const eq=APP.equity[idx];
+  // Set index first — openModal would reset everything, so we bypass it
+  el('eq-edit-idx').value=idx;
+  el('ef-stock').value=eq.stock;
+  el('ef-yahoo').value=eq.yahoo||'';
+  el('ef-exch').value=eq.exch;
+  el('ef-dir').value=eq.dir;
+  el('ef-qty').value=eq.qty;
+  el('ef-cost').value=eq.cost;
+  el('ef-cmp').value=eq.cmp!==null&&eq.cmp!==undefined?eq.cmp:'';
+  el('ef-beta').value=eq.beta!==null&&eq.beta!==undefined?eq.beta:1;
+  el('ef-sector').value=eq.sector||'';
+  el('ef-notes').value=eq.notes||'';
+  el('modal-title-eq').textContent='EDIT STOCK — '+eq.stock;
+  // Open modal directly — do NOT call openModal() as it resets all fields
+  el('modal-eq').classList.add('open');
+}
+function deleteEquity(idx){if(!confirm('Delete?'))return;APP.equity.splice(idx,1);saveState();renderAll();renderEqSymbolsList();toast('Deleted');}
+function clearAllEquity(){if(!confirm('Clear ALL equity?'))return;APP.equity=[];saveState();renderAll();toast('Cleared');}
+
+// ═══════════════════════════════════════════════════════════════
+// DATA MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+function clearAll(){
+  if (!confirm('Clear ALL data from this device AND cloud? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  APP={settings:{...DEFAULT_SETTINGS},positions:[],equity:[],clients:JSON.parse(JSON.stringify(DEFAULT_CLIENTS))};
+  saveState();
+  if(fbDatabase && fbConnected) {
+    fbDatabase.ref('riskdesk/app').set(APP).catch(e=>console.warn('Firebase clear failed:',e));
+  }
+  renderAll();toast('All data cleared (local + cloud)');
+}
+function exportData(){const b=new Blob([JSON.stringify(APP,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='nifty_cmd_'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('Exported ✓');}
+function loadFromFile(){el('file-import').click();}
+function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{APP=JSON.parse(ev.target.result);if(!APP.clients)APP.clients=JSON.parse(JSON.stringify(DEFAULT_CLIENTS));saveState();renderAll();toast('Imported ✓');}catch(err){toast('Invalid JSON',true);}};r.readAsText(f);}
+
+document.querySelectorAll('.modal-bg').forEach(bg=>{
+  bg.addEventListener('click',e=>{if(e.target===bg)bg.classList.remove('open');});
+});
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+loadSettingsForm();
+renderAll();
+updateSyncUI();
+
+// ── Auto-init Firebase if config was pre-baked or previously saved ──
+(async () => {
+  const cfg = FIREBASE_PRECONFIG || loadFirebaseConfig();
+  if (cfg && cfg.apiKey) {
+    await initFirebase(cfg);
+  }
+})();
+
+// ── Register Service Worker for PWA offline support ──
+if ('serviceWorker' in navigator) {
+  // Inline service worker as a blob — no separate sw.js file needed
+  const swCode = `
+    const CACHE = 'risk-desk-v1';
+    const ASSETS = ['/'];
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(caches.keys().then(keys =>
+        Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      ));
+      self.clients.claim();
+    });
+    self.addEventListener('fetch', e => {
+      // Network first for API calls, cache first for app shell
+      if (e.request.url.includes('firebaseio.com') ||
+          e.request.url.includes('yahoo.com') ||
+          e.request.url.includes('allorigins')) {
+        e.respondWith(fetch(e.request).catch(() => new Response('', {status: 503})));
+        return;
+      }
+      e.respondWith(
+        caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
+          if (res.ok && e.request.method === 'GET') {
+            const clone = res.clone();
+            caches.open(CACHE).then(c => c.put(e.request, clone));
+          }
+          return res;
+        }))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], {type: 'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl, {scope: './'})
+    .then(reg => console.log('SW registered:', reg.scope))
+    .catch(e => console.warn('SW registration failed (expected on file://):', e));
+}
+</script>
+</body>
+</html>
