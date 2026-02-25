@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>RISK DESK</title>
@@ -18,9 +16,9 @@
 <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22RISK+DESK%22%2C%22short_name%22%3A%22RISK+DESK%22%2C%22description%22%3A%22Nifty+Options+Risk+Dashboard%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2307090f%22%2C%22theme_color%22%3A%22%2307090f%22%2C%22orientation%22%3A%22any%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg+xmlns%3D%2527http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%2527+viewBox%3D%270+0+512+512%2527%253E%253Crect+width%3D%2527512%2527+height%3D%2527512%2527+fill%3D%2527%252307090f%2527%2F%253E%253Ctext+x%3D%2527256%2527+y%3D%2527320%2527+font-size%3D%2527240%2527+text-anchor%3D%2527middle%2527+fill%3D%2527%252300c8ff%2527%253E%25E2%25AC%25A1%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any+maskable%22%7D%5D%7D">
 
 <!-- Apple touch icon (inline SVG → PNG-like) -->
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%2307090f'/><text x='256' y='320' font-size='240' text-anchor='middle' fill='%2300c8ff'>⬡</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'&gt;&lt;rect width='512' height='512' rx='80' fill='%2307090f'/&gt;&lt;text x='256' y='320' font-size='240' text-anchor='middle' fill='%2300c8ff'&gt;⬡&lt;/text&gt;&lt;/svg&gt;">
 
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#07090f;--bg2:#0c1018;--bg3:#111620;--bg4:#161c28;
@@ -205,7 +203,7 @@ input,select{font-size:16px !important;}
 .tbl input,.modal input,.modal select{font-size:14px !important;}
 
 </style>
-</head>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script></head>
 <body>
 <div class="wrap">
 
@@ -217,27 +215,27 @@ input,select{font-size:16px !important;}
   </div>
   <div class="hdr-r">
     <span id="live-status-badge" class="badge badge-gray"><span class="live-dot orange"></span>PRICES: MANUAL</span>
-    <span id="vix-badge" class="badge badge-orange">VIX: —</span>
-    <span id="nifty-badge" class="badge badge-blue">NIFTY: —</span>
+    <span id="vix-badge" class="badge badge-blue">VIX: 14.15</span>
+    <span id="nifty-badge" class="badge badge-blue">NIFTY: 25,630.2</span>
     <button class="btn btn-green" style="padding:5px 12px;font-size:9px;" onclick="fetchLivePrices()">⟳ FETCH LIVE</button>
-    <span id="clock"></span>
+    <span id="clock">25 Feb 2026 · 13:55:17</span>
   </div>
 </div>
 
 <!-- NAV -->
 <div class="nav">
-  <div class="nav-tab active" onclick="switchPage('dashboard')">DASHBOARD</div>
+  <div class="nav-tab" onclick="switchPage('dashboard')">DASHBOARD</div>
   <div class="nav-tab" onclick="switchPage('portfolio')">POSITIONS</div>
   <div class="nav-tab" onclick="switchPage('equity')">EQUITY BOOK</div>
-  <div class="nav-tab" onclick="switchPage('scenario')">SCENARIO P&L</div>
+  <div class="nav-tab" onclick="switchPage('scenario')">SCENARIO P&amp;L</div>
   <div class="nav-tab" onclick="switchPage('greeks')">GREEKS DEEP DIVE</div>
-  <div class="nav-tab" onclick="switchPage('alerts')">ALERTS & LEVELS</div>
+  <div class="nav-tab" onclick="switchPage('alerts')">ALERTS &amp; LEVELS</div>
   <div class="nav-tab" onclick="switchPage('settings')">SETTINGS</div>
-  <div class="nav-tab" id="nav-sync" onclick="switchPage('sync')" style="color:var(--orange);border-color:var(--orange2);">☁ SYNC SETUP</div>
+  <div class="nav-tab active" id="nav-sync" onclick="switchPage('sync')" style="color: var(--green); border-color: var(--orange2);">☁ SYNC ✓</div>
 </div>
 
 <!-- ══════════════════════════════ DASHBOARD -->
-<div id="page-dashboard" class="page active">
+<div id="page-dashboard" class="page">
 
   <!-- LIVE PRICE PANEL -->
   <div class="live-panel">
@@ -255,27 +253,27 @@ input,select{font-size:16px !important;}
   <div class="g5 mb12">
     <div class="card card-accent">
       <div class="kpi-label">Nifty Spot</div>
-      <div class="kpi-val accent" id="d-nifty">—</div>
-      <div class="kpi-sub" id="d-nifty-sub">1 SD range</div>
+      <div class="kpi-val accent" id="d-nifty">25,630.2</div>
+      <div class="kpi-sub" id="d-nifty-sub">1 SD: 24,429.2 – 26,831.2</div>
     </div>
     <div class="card card-orange">
       <div class="kpi-label">India VIX</div>
-      <div class="kpi-val" id="d-vix" style="color:var(--orange)">—</div>
-      <div class="kpi-sub" id="d-vix-regime">—</div>
+      <div class="kpi-val" id="d-vix" style="color:var(--orange)">14.15</div>
+      <div class="kpi-sub" id="d-vix-regime">OPTIMAL regime</div>
     </div>
     <div class="card card-green">
-      <div class="kpi-label">Total Opt/Fut P&L ₹</div>
-      <div class="kpi-val kpi-sm" id="d-opt-pnl">—</div>
+      <div class="kpi-label">Total Opt/Fut P&amp;L ₹</div>
+      <div class="kpi-val kpi-sm" id="d-opt-pnl"><span class="green">+₹7,628</span></div>
       <div class="kpi-sub">Actual (LTP − Trade) × Qty</div>
     </div>
     <div class="card card-purple">
-      <div class="kpi-label">Equity P&L ₹</div>
-      <div class="kpi-val kpi-sm" id="d-eq-pnl">—</div>
+      <div class="kpi-label">Equity P&amp;L ₹</div>
+      <div class="kpi-val kpi-sm" id="d-eq-pnl"><span class="green">+₹36,194</span></div>
       <div class="kpi-sub">Unrealised MTM</div>
     </div>
     <div class="card" style="border-top:2px solid var(--yellow)">
-      <div class="kpi-label">Combined P&L ₹</div>
-      <div class="kpi-val kpi-sm" id="d-total-pnl" style="color:var(--yellow)">—</div>
+      <div class="kpi-label">Combined P&amp;L ₹</div>
+      <div class="kpi-val kpi-sm" id="d-total-pnl" style="color:var(--yellow)"><span class="green">+₹43,822</span></div>
       <div class="kpi-sub">Options + Equity</div>
     </div>
   </div>
@@ -285,31 +283,31 @@ input,select{font-size:16px !important;}
     <div class="card card-accent">
       <div class="stitle">CURRENT EXPOSURE — BLACK-SCHOLES GREEKS AT SPOT</div>
       <div class="g4">
-        <div><div class="kpi-label">Net Delta (units)</div><div class="kpi-val kpi-xs accent" id="d-net-delta">—</div><div class="greek-explain">Total directional exposure. +ve = bullish, -ve = bearish.</div></div>
-        <div><div class="kpi-label">Delta Exposure ₹</div><div class="kpi-val kpi-xs" id="d-delta-exp">—</div><div class="greek-explain">₹ change per 1pt Nifty move. Delta × Spot.</div></div>
-        <div><div class="kpi-label">Net Gamma</div><div class="kpi-val kpi-xs red" id="d-gamma">—</div><div class="greek-explain">How fast delta changes per 1pt move. Negative = delta hurts you on big moves.</div></div>
-        <div><div class="kpi-label">Theta / Day ₹</div><div class="kpi-val kpi-xs green" id="d-theta">—</div><div class="greek-explain">Daily premium decay earned (+) or lost (−).</div></div>
-        <div><div class="kpi-label">Vega / 1% IV ₹</div><div class="kpi-val kpi-xs" id="d-vega">—</div><div class="greek-explain">₹ impact if VIX moves 1%. Negative = VIX spike hurts you.</div></div>
-        <div><div class="kpi-label">Equity Delta ₹</div><div class="kpi-val kpi-xs" id="d-eq-delta">—</div><div class="greek-explain">NiftyBees + ETF directional exposure.</div></div>
-        <div><div class="kpi-label">Beta-Adj Equity ₹</div><div class="kpi-val kpi-xs" id="d-eq-beta-delta">—</div><div class="greek-explain">Beta-weighted equity market exposure.</div></div>
-        <div><div class="kpi-label">P&L per 1% Move ₹</div><div class="kpi-val kpi-xs orange" id="d-pnl-1pct">—</div><div class="greek-explain">Combined options + equity sensitivity to 1% Nifty move.</div></div>
+        <div><div class="kpi-label">Net Delta (units)</div><div class="kpi-val kpi-xs accent" id="d-net-delta">97.31</div><div class="greek-explain">Total directional exposure. +ve = bullish, -ve = bearish.</div></div>
+        <div><div class="kpi-label">Delta Exposure ₹</div><div class="kpi-val kpi-xs" id="d-delta-exp"><span class="green">₹24,94,131</span></div><div class="greek-explain">₹ change per 1pt Nifty move. Delta × Spot.</div></div>
+        <div><div class="kpi-label">Net Gamma</div><div class="kpi-val kpi-xs red" id="d-gamma" style="color: var(--green);">0.0403</div><div class="greek-explain">How fast delta changes per 1pt move. Negative = delta hurts you on big moves.</div></div>
+        <div><div class="kpi-label">Theta / Day ₹</div><div class="kpi-val kpi-xs green" id="d-theta">₹-573</div><div class="greek-explain">Daily premium decay earned (+) or lost (−).</div></div>
+        <div><div class="kpi-label">Vega / 1% IV ₹</div><div class="kpi-val kpi-xs" id="d-vega">₹2,982</div><div class="greek-explain">₹ impact if VIX moves 1%. Negative = VIX spike hurts you.</div></div>
+        <div><div class="kpi-label">Equity Delta ₹</div><div class="kpi-val kpi-xs" id="d-eq-delta">₹32,43,208</div><div class="greek-explain">NiftyBees + ETF directional exposure.</div></div>
+        <div><div class="kpi-label">Beta-Adj Equity ₹</div><div class="kpi-val kpi-xs" id="d-eq-beta-delta">₹32,43,208</div><div class="greek-explain">Beta-weighted equity market exposure.</div></div>
+        <div><div class="kpi-label">P&amp;L per 1% Move ₹</div><div class="kpi-val kpi-xs green" id="d-pnl-1pct">₹57,373</div><div class="greek-explain">Combined options + equity sensitivity to 1% Nifty move.</div></div>
       </div>
     </div>
     <div>
       <div class="card card-orange mb12">
         <div class="stitle">VIX REGIME</div>
-        <div class="kpi-val" id="d-vix2" style="color:var(--orange);font-size:32px;">—</div>
-        <div id="d-vix-badge2" class="badge badge-green mt6" style="display:inline-block;">—</div>
-        <div id="d-vix-action" class="alert-box ok mt6" style="font-size:10px;"></div>
+        <div class="kpi-val" id="d-vix2" style="color:var(--orange);font-size:32px;">14.15</div>
+        <div id="d-vix-badge2" class="badge badge-blue mt6" style="display:inline-block;">OPTIMAL</div>
+        <div id="d-vix-action" class="alert-box ok mt6" style="font-size:10px;">Best zone. Full iron condor A&amp;B. Full spreads C D E. Weekly strangles for A.</div>
       </div>
       <div class="card card-green">
-        <div class="stitle">DTE & CREDIT</div>
+        <div class="stitle">DTE &amp; CREDIT</div>
         <div style="display:flex;justify-content:space-between;align-items:flex-end;">
-          <div><div class="kpi-label">Days to Expiry</div><div class="kpi-val kpi-sm" id="d-dte">—</div></div>
-          <div style="text-align:right;"><div class="kpi-label">Net Credit ₹</div><div class="kpi-val kpi-xs green" id="d-credit">—</div></div>
+          <div><div class="kpi-label">Days to Expiry</div><div class="kpi-val kpi-sm" id="d-dte">40 days</div></div>
+          <div style="text-align:right;"><div class="kpi-label">Net Credit ₹</div><div class="kpi-val kpi-xs green" id="d-credit">₹67,250</div></div>
         </div>
-        <div class="gauge mt6"><div class="gauge-fill gauge-accent" id="d-dte-bar" style="width:70%;"></div></div>
-        <div id="d-dte-note" class="kpi-sub mt6">—</div>
+        <div class="gauge mt6"><div class="gauge-fill gauge-green" id="d-dte-bar" style="width: 5%;"></div></div>
+        <div id="d-dte-note" class="kpi-sub mt6">✓ Theta working in your favour — hold course</div>
       </div>
     </div>
   </div>
@@ -318,8 +316,8 @@ input,select{font-size:16px !important;}
   <div class="card mb12">
     <div class="stitle">POSITION RANGE GAUGE</div>
     <div style="padding:0 16px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:3px;" id="range-ticks"></div>
-      <div class="range-track"><div class="range-pin" id="range-pin" style="left:50%"><div class="range-pin-lbl" id="range-pin-lbl">—</div><div class="range-arrow"></div></div></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px;" id="range-ticks"><span style="font-family:var(--mono);font-size:8px;color:var(--text3);">24,800</span><span style="font-family:var(--mono);font-size:8px;color:var(--text3);">25,200</span><span style="font-family:var(--mono);font-size:8px;color:var(--text3);">25,700</span><span style="font-family:var(--mono);font-size:8px;color:var(--text3);">26,200</span><span style="font-family:var(--mono);font-size:8px;color:var(--text3);">26,500</span></div>
+      <div class="range-track"><div class="range-pin" id="range-pin" style="left: 49.1391%;"><div class="range-pin-lbl" id="range-pin-lbl">25,630.2</div><div class="range-arrow"></div></div></div>
       <div style="display:flex;justify-content:space-between;">
         <span style="font-size:9px;color:var(--red);font-family:var(--mono);">EXIT SHORT PE ↑</span>
         <span style="font-size:9px;color:var(--orange);font-family:var(--mono);">CAUTION</span>
@@ -334,14 +332,32 @@ input,select{font-size:16px !important;}
   <div class="g12 mb12">
     <div class="card">
       <div class="stitle">THETA DECAY CALENDAR</div>
-      <div class="cal-wrap" id="cal-wrap"></div>
-      <div id="cal-summary" class="alert-box info" style="font-size:10px;"></div>
+      <div class="cal-wrap" id="cal-wrap"><div class="cal-day cal-remaining">1</div><div class="cal-day cal-remaining">2</div><div class="cal-day cal-remaining">3</div><div class="cal-day cal-remaining">4</div><div class="cal-day cal-remaining">5</div><div class="cal-day cal-remaining">6</div><div class="cal-day cal-remaining">7</div><div class="cal-day cal-remaining">8</div><div class="cal-day cal-remaining">9</div><div class="cal-day cal-remaining">10</div><div class="cal-day cal-remaining">11</div><div class="cal-day cal-remaining">12</div><div class="cal-day cal-remaining">13</div><div class="cal-day cal-remaining">14</div><div class="cal-day cal-remaining">15</div><div class="cal-day cal-remaining">16</div><div class="cal-day cal-remaining">17</div><div class="cal-day cal-remaining">18</div><div class="cal-day cal-remaining">19</div><div class="cal-day cal-remaining">20</div><div class="cal-day cal-remaining">21</div><div class="cal-day cal-remaining">22</div><div class="cal-day cal-remaining">23</div><div class="cal-day cal-remaining">24</div><div class="cal-day cal-remaining">25</div><div class="cal-day cal-remaining">26</div><div class="cal-day cal-remaining">27</div><div class="cal-day cal-remaining">28</div><div class="cal-day cal-remaining">29</div><div class="cal-day cal-remaining">30</div><div class="cal-day cal-remaining">31</div><div class="cal-day cal-remaining">32</div><div class="cal-day cal-danger">33</div><div class="cal-day cal-danger">34</div><div class="cal-day cal-danger">35</div><div class="cal-day cal-danger">36</div><div class="cal-day cal-danger">37</div><div class="cal-day cal-danger">38</div><div class="cal-day cal-danger">39</div><div class="cal-day cal-expiry">EXP</div></div>
+      <div id="cal-summary" class="alert-box info" style="font-size:10px;">Day 0/40 · Credit decayed: ₹0 · Remaining: ₹67,250 · ✓ Hold course</div>
     </div>
     <div class="card card-green">
       <div class="stitle">ACTIVE POSITIONS</div>
       <table class="tbl" id="d-positions-mini">
-        <thead><tr><th>INSTRUMENT</th><th>TYPE</th><th>B/S</th><th>QTY</th><th>BS DELTA</th><th>P&L ₹</th></tr></thead>
-        <tbody></tbody>
+        <thead><tr><th>INSTRUMENT</th><th>TYPE</th><th>B/S</th><th>QTY</th><th>BS DELTA</th><th>P&amp;L ₹</th></tr></thead>
+        <tbody><tr>
+      <td class="mono bold">NIFTY</td><td>Put</td>
+      <td><span class="chip badge-green">Buy</span></td>
+      <td class="mono">65</td>
+      <td class="mono red">-18.40</td>
+      <td class="mono"><span class="green">+₹1,131</span></td>
+    </tr><tr>
+      <td class="mono bold">NIFTY</td><td>Put</td>
+      <td><span class="chip badge-green">Buy</span></td>
+      <td class="mono">65</td>
+      <td class="mono red">-14.28</td>
+      <td class="mono"><span class="green">+₹801</span></td>
+    </tr><tr>
+      <td class="mono bold">NIFTY</td><td>Future</td>
+      <td><span class="chip badge-green">Buy</span></td>
+      <td class="mono">130</td>
+      <td class="mono green">130.00</td>
+      <td class="mono"><span class="green">+₹5,697</span></td>
+    </tr></tbody>
       </table>
     </div>
   </div>
@@ -351,7 +367,57 @@ input,select{font-size:16px !important;}
     <div class="stitle">CLIENT PORTFOLIO — INCOME STATUS</div>
     <table class="tbl" id="d-client-tbl">
       <thead><tr><th>CLIENT</th><th>AUM</th><th>STRATEGY</th><th>LOTS</th><th>CREDIT ₹</th><th>TARGET LOW ₹</th><th>TARGET HIGH ₹</th><th>% OF AUM</th><th>STATUS</th></tr></thead>
-      <tbody></tbody>
+      <tbody><tr>
+      <td class="bold mono accent" style="font-size:16px;">A</td>
+      <td class="mono">₹50,00,000</td>
+      <td style="font-size:10px;">Iron Condor + Weekly</td>
+      <td class="mono">2</td>
+      <td class="mono green">₹25,500</td>
+      <td class="mono">₹70,000</td>
+      <td class="mono">₹85,000</td>
+      <td class="mono orange">0.510%</td>
+      <td><span class="chip badge-orange">BUILDING</span></td>
+    </tr><tr>
+      <td class="bold mono accent" style="font-size:16px;">B</td>
+      <td class="mono">₹36,00,000</td>
+      <td style="font-size:10px;">Iron Condor</td>
+      <td class="mono">2</td>
+      <td class="mono green">₹19,500</td>
+      <td class="mono">₹34,500</td>
+      <td class="mono">₹42,000</td>
+      <td class="mono orange">0.542%</td>
+      <td><span class="chip badge-orange">BUILDING</span></td>
+    </tr><tr>
+      <td class="bold mono accent" style="font-size:16px;">C</td>
+      <td class="mono">₹20,00,000</td>
+      <td style="font-size:10px;">Bull Put Spread</td>
+      <td class="mono">2</td>
+      <td class="mono green">₹13,500</td>
+      <td class="mono">₹20,700</td>
+      <td class="mono">₹23,100</td>
+      <td class="mono orange">0.675%</td>
+      <td><span class="chip badge-orange">BUILDING</span></td>
+    </tr><tr>
+      <td class="bold mono accent" style="font-size:16px;">D</td>
+      <td class="mono">₹16,50,000</td>
+      <td style="font-size:10px;">Bull Put Spread</td>
+      <td class="mono">2</td>
+      <td class="mono green">₹13,500</td>
+      <td class="mono">₹18,900</td>
+      <td class="mono">₹20,700</td>
+      <td class="mono orange">0.818%</td>
+      <td><span class="chip badge-orange">BUILDING</span></td>
+    </tr><tr>
+      <td class="bold mono accent" style="font-size:16px;">E</td>
+      <td class="mono">₹12,00,000</td>
+      <td style="font-size:10px;">Single Bull Put</td>
+      <td class="mono">1</td>
+      <td class="mono green">₹6,750</td>
+      <td class="mono">₹10,650</td>
+      <td class="mono">₹14,000</td>
+      <td class="mono orange">0.563%</td>
+      <td><span class="chip badge-orange">BUILDING</span></td>
+    </tr></tbody>
     </table>
   </div>
 </div>
@@ -359,31 +425,97 @@ input,select{font-size:16px !important;}
 <!-- ══════════════════════════════ POSITIONS -->
 <div id="page-portfolio" class="page">
   <div class="card mb12" style="border-color:var(--accent2);">
-    <div class="stitle">OPTIONS & FUTURES POSITIONS</div>
+    <div class="stitle">OPTIONS &amp; FUTURES POSITIONS</div>
     <div class="btn-row mb12">
       <button class="btn btn-primary" onclick="openModal('opt')">+ ADD POSITION</button>
       <button class="btn btn-ghost" onclick="clearAllPositions()">✕ CLEAR ALL</button>
       <button class="btn btn-green" style="padding:5px 10px;font-size:9px;" onclick="fetchLivePrices()">⟳ REFRESH GREEKS</button>
       <div id="greeks-live-status" style="font-family:var(--mono);font-size:9px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <span style="color:var(--text3);">Greeks use →</span>
-        <span id="greeks-spot-badge" class="badge badge-blue">SPOT: —</span>
-        <span id="greeks-iv-badge" class="badge badge-orange">IV: —</span>
-        <span id="greeks-dte-badge" class="badge badge-gray">DTE: auto</span>
+        <span id="greeks-spot-badge" class="badge badge-blue">SPOT: 25,630.2</span>
+        <span id="greeks-iv-badge" class="badge badge-orange">IV: VIX 14.15%</span>
+        <span id="greeks-dte-badge" class="badge badge-accent">DTE: auto (30d to expiry)</span>
       </div>
     </div>
     <div style="overflow-x:auto;">
     <table class="tbl" id="opt-tbl">
-      <thead><tr><th>#</th><th>INST</th><th>TYPE</th><th>B/S</th><th>ENTRY SPOT</th><th>STRIKE</th><th title="⚡ Using live VIX when VIX mode ON. Entry IV shown when OFF.">IV% ⚡</th><th title="Auto-calculated daily from expiry date. No manual update needed.">DTE 🗓</th><th>LOT</th><th>LOTS</th><th>NET QTY</th><th>TRADE PRICE ₹</th><th>CURR LTP ₹</th><th title="Recalculates every 1min (market hours) using live Nifty spot + VIX">BS DELTA ↻</th><th>BS GAMMA</th><th>BS THETA/DAY</th><th>BS VEGA</th><th>P&L ₹</th><th>NOTES</th><th>ACT</th></tr></thead>
-      <tbody id="opt-body"></tbody>
-      <tfoot><tr class="total-row" id="opt-total"><td colspan="17" style="text-align:right;">PORTFOLIO TOTALS →</td><td id="opt-total-pnl">—</td><td></td><td></td></tr></tfoot>
+      <thead><tr><th>#</th><th>INST</th><th>TYPE</th><th>B/S</th><th>ENTRY SPOT</th><th>STRIKE</th><th title="⚡ Using live VIX when VIX mode ON. Entry IV shown when OFF.">IV% ⚡</th><th title="Auto-calculated daily from expiry date. No manual update needed.">DTE 🗓</th><th>LOT</th><th>LOTS</th><th>NET QTY</th><th>TRADE PRICE ₹</th><th>CURR LTP ₹</th><th title="Recalculates every 1min (market hours) using live Nifty spot + VIX">BS DELTA ↻</th><th>BS GAMMA</th><th>BS THETA/DAY</th><th>BS VEGA</th><th>P&amp;L ₹</th><th>NOTES</th><th>ACT</th></tr></thead>
+      <tbody id="opt-body"><tr>
+      <td class="mono">1</td>
+      <td class="bold">NIFTY</td><td>Put</td>
+      <td><span class="chip badge-green">Buy</span></td>
+      <td class="mono">25,500</td>
+      <td class="mono">25,200</td>
+      <td class="mono" title="Using live VIX: 14.15%"><span style="color:var(--orange);font-size:9px;">⚡</span>14.2%</td>
+      <td class="mono accent" title="Expiry: 2026-03-26 (auto-calculates daily)">30</td>
+      <td class="mono">65</td><td class="mono">1</td>
+      <td class="mono bold green">65</td>
+      <td class="mono">₹184.65</td>
+      <td class="mono accent">₹202.05</td>
+      <td class="mono red">-18.405</td>
+      <td class="mono green">0.02150</td>
+      <td class="mono red">₹-301</td>
+      <td class="mono green">₹1,591</td>
+      <td class="mono"><span class="green">+₹1,131</span></td>
+      <td style="font-size:10px;color:var(--text3);"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editPosition(0)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deletePosition(0)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">2</td>
+      <td class="bold">NIFTY</td><td>Put</td>
+      <td><span class="chip badge-green">Buy</span></td>
+      <td class="mono">25,500</td>
+      <td class="mono">25,000</td>
+      <td class="mono" title="Using live VIX: 14.15%"><span style="color:var(--orange);font-size:9px;">⚡</span>14.2%</td>
+      <td class="mono accent" title="Expiry: 2026-03-26 (auto-calculates daily)">30</td>
+      <td class="mono">65</td><td class="mono">1</td>
+      <td class="mono bold green">65</td>
+      <td class="mono">₹145.98</td>
+      <td class="mono accent">₹158.30</td>
+      <td class="mono red">-14.283</td>
+      <td class="mono green">0.01879</td>
+      <td class="mono red">₹-272</td>
+      <td class="mono green">₹1,391</td>
+      <td class="mono"><span class="green">+₹801</span></td>
+      <td style="font-size:10px;color:var(--text3);"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editPosition(1)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deletePosition(1)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">3</td>
+      <td class="bold">NIFTY</td><td>Future</td>
+      <td><span class="chip badge-green">Buy</span></td>
+      <td class="mono">25,500</td>
+      <td class="mono">—</td>
+      <td class="mono" title="Using live VIX: 14.15%"><span style="color:var(--orange);font-size:9px;">⚡</span>14.2%</td>
+      <td class="mono accent" title="Expiry: 2026-03-26 (auto-calculates daily)">30</td>
+      <td class="mono">65</td><td class="mono">2</td>
+      <td class="mono bold green">130</td>
+      <td class="mono">₹25,641.18</td>
+      <td class="mono accent">₹25,685.00</td>
+      <td class="mono green">130.000</td>
+      <td class="mono green">0.00000</td>
+      <td class="mono green">₹0</td>
+      <td class="mono green">₹0</td>
+      <td class="mono"><span class="green">+₹5,697</span></td>
+      <td style="font-size:10px;color:var(--text3);"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editPosition(2)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deletePosition(2)">DEL</button>
+      </td>
+    </tr></tbody>
+      <tfoot><tr class="total-row" id="opt-total"><td colspan="17" style="text-align:right;">PORTFOLIO TOTALS →</td><td id="opt-total-pnl"><span class="green">+₹7,628</span></td><td></td><td></td></tr></tfoot>
     </table>
     </div>
   </div>
   <div class="g4 mb12">
-    <div class="card card-accent"><div class="kpi-label">Net BS Delta</div><div class="kpi-val kpi-sm accent" id="p-delta">—</div><div class="greek-explain">Full BS delta. Changes with spot, time, vol.</div></div>
-    <div class="card card-green"><div class="kpi-label">Net Theta / Day ₹</div><div class="kpi-val kpi-sm green" id="p-theta">—</div><div class="greek-explain">Daily time decay. Accelerates near expiry.</div></div>
-    <div class="card card-red"><div class="kpi-label">Net Gamma</div><div class="kpi-val kpi-sm red" id="p-gamma">—</div><div class="greek-explain">Negative gamma = losses accelerate on big moves.</div></div>
-    <div class="card card-purple"><div class="kpi-label">Net Vega / 1% IV ₹</div><div class="kpi-val kpi-sm purple" id="p-vega">—</div><div class="greek-explain">VIX spike of 1% = this ₹ impact on portfolio.</div></div>
+    <div class="card card-accent"><div class="kpi-label">Net BS Delta</div><div class="kpi-val kpi-sm accent" id="p-delta">97.312</div><div class="greek-explain">Full BS delta. Changes with spot, time, vol.</div></div>
+    <div class="card card-green"><div class="kpi-label">Net Theta / Day ₹</div><div class="kpi-val kpi-sm green" id="p-theta">₹-573</div><div class="greek-explain">Daily time decay. Accelerates near expiry.</div></div>
+    <div class="card card-red"><div class="kpi-label">Net Gamma</div><div class="kpi-val kpi-sm red" id="p-gamma">0.04029</div><div class="greek-explain">Negative gamma = losses accelerate on big moves.</div></div>
+    <div class="card card-purple"><div class="kpi-label">Net Vega / 1% IV ₹</div><div class="kpi-val kpi-sm purple" id="p-vega">₹2,982</div><div class="greek-explain">VIX spike of 1% = this ₹ impact on portfolio.</div></div>
   </div>
 </div>
 
@@ -398,31 +530,259 @@ input,select{font-size:16px !important;}
     </div>
     <div style="overflow-x:auto;">
     <table class="tbl" id="eq-tbl">
-      <thead><tr><th>#</th><th>STOCK</th><th>EXCH</th><th>L/S</th><th>QTY</th><th>AVG COST ₹</th><th>CMP ₹</th><th>BETA</th><th>INVESTED ₹</th><th>CURR VALUE ₹</th><th>P&L ₹</th><th>P&L%</th><th>DELTA ₹</th><th>BETA-ADJ ₹</th><th>SECTOR</th><th>ACT</th></tr></thead>
-      <tbody id="eq-body"></tbody>
-      <tfoot><tr class="total-row"><td colspan="8">EQUITY TOTALS</td><td id="eq-t-inv">—</td><td id="eq-t-curr">—</td><td id="eq-t-pnl">—</td><td id="eq-t-pnlpct">—</td><td id="eq-t-delta">—</td><td id="eq-t-betadelta">—</td><td></td><td></td></tr></tfoot>
+      <thead><tr><th>#</th><th>STOCK</th><th>EXCH</th><th>L/S</th><th>QTY</th><th>AVG COST ₹</th><th>CMP ₹</th><th>BETA</th><th>INVESTED ₹</th><th>CURR VALUE ₹</th><th>P&amp;L ₹</th><th>P&amp;L%</th><th>DELTA ₹</th><th>BETA-ADJ ₹</th><th>SECTOR</th><th>ACT</th></tr></thead>
+      <tbody id="eq-body"><tr>
+      <td class="mono">1</td><td class="bold">cpseetf</td>
+      <td style="font-size:10px;">NSE</td>
+      <td><span class="chip badge-green">Long</span></td>
+      <td class="mono">1,000</td>
+      <td class="mono">₹93.04</td>
+      <td class="mono accent">₹102.67</td>
+      <td class="mono">1</td>
+      <td class="mono">₹93,040</td>
+      <td class="mono">₹1,02,670</td>
+      <td class="mono"><span class="green">+₹9,630</span></td>
+      <td class="mono"><span class="green">10.35%</span></td>
+      <td class="mono">₹1,02,670</td>
+      <td class="mono">₹1,02,670</td>
+      <td style="font-size:10px;"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(0)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(0)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">2</td><td class="bold">infrabees</td>
+      <td style="font-size:10px;">NSE</td>
+      <td><span class="chip badge-green">Long</span></td>
+      <td class="mono">100</td>
+      <td class="mono">₹996.74</td>
+      <td class="mono accent">₹999.02</td>
+      <td class="mono">1</td>
+      <td class="mono">₹99,674</td>
+      <td class="mono">₹99,902</td>
+      <td class="mono"><span class="green">+₹228</span></td>
+      <td class="mono"><span class="green">0.23%</span></td>
+      <td class="mono">₹99,902</td>
+      <td class="mono">₹99,902</td>
+      <td style="font-size:10px;"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(1)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(1)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">3</td><td class="bold">irctc</td>
+      <td style="font-size:10px;">NSE</td>
+      <td><span class="chip badge-green">Long</span></td>
+      <td class="mono">300</td>
+      <td class="mono">₹604.30</td>
+      <td class="mono accent">₹617.40</td>
+      <td class="mono">1</td>
+      <td class="mono">₹1,81,290</td>
+      <td class="mono">₹1,85,220</td>
+      <td class="mono"><span class="green">+₹3,930</span></td>
+      <td class="mono"><span class="green">2.17%</span></td>
+      <td class="mono">₹1,85,220</td>
+      <td class="mono">₹1,85,220</td>
+      <td style="font-size:10px;"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(2)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(2)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">4</td><td class="bold">jiofin</td>
+      <td style="font-size:10px;">NSE</td>
+      <td><span class="chip badge-green">Long</span></td>
+      <td class="mono">300</td>
+      <td class="mono">₹250.00</td>
+      <td class="mono accent">₹257.70</td>
+      <td class="mono">1</td>
+      <td class="mono">₹75,000</td>
+      <td class="mono">₹77,310</td>
+      <td class="mono"><span class="green">+₹2,310</span></td>
+      <td class="mono"><span class="green">3.08%</span></td>
+      <td class="mono">₹77,310</td>
+      <td class="mono">₹77,310</td>
+      <td style="font-size:10px;"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(3)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(3)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">5</td><td class="bold">lgindia</td>
+      <td style="font-size:10px;">NSE</td>
+      <td><span class="chip badge-green">Long</span></td>
+      <td class="mono">28</td>
+      <td class="mono">₹1,350.00</td>
+      <td class="mono accent">₹1,573.40</td>
+      <td class="mono">1</td>
+      <td class="mono">₹37,800</td>
+      <td class="mono">₹44,055</td>
+      <td class="mono"><span class="green">+₹6,255</span></td>
+      <td class="mono"><span class="green">16.55%</span></td>
+      <td class="mono">₹44,055</td>
+      <td class="mono">₹44,055</td>
+      <td style="font-size:10px;"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(4)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(4)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">6</td><td class="bold">morealty</td>
+      <td style="font-size:10px;">NSE</td>
+      <td><span class="chip badge-green">Long</span></td>
+      <td class="mono">1,750</td>
+      <td class="mono">₹85.01</td>
+      <td class="mono accent">₹80.63</td>
+      <td class="mono">1</td>
+      <td class="mono">₹1,48,768</td>
+      <td class="mono">₹1,41,103</td>
+      <td class="mono"><span class="red">₹-7,665</span></td>
+      <td class="mono"><span class="red">-5.15%</span></td>
+      <td class="mono">₹1,41,103</td>
+      <td class="mono">₹1,41,103</td>
+      <td style="font-size:10px;"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(5)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(5)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">7</td><td class="bold">nsdl</td>
+      <td style="font-size:10px;">BSE</td>
+      <td><span class="chip badge-green">Long</span></td>
+      <td class="mono">18</td>
+      <td class="mono">₹800.00</td>
+      <td class="mono accent">₹920.50</td>
+      <td class="mono">1</td>
+      <td class="mono">₹14,400</td>
+      <td class="mono">₹16,569</td>
+      <td class="mono"><span class="green">+₹2,169</span></td>
+      <td class="mono"><span class="green">15.06%</span></td>
+      <td class="mono">₹16,569</td>
+      <td class="mono">₹16,569</td>
+      <td style="font-size:10px;"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(6)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(6)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">8</td><td class="bold">niftybees</td>
+      <td style="font-size:10px;">NSE</td>
+      <td><span class="chip badge-green">Long</span></td>
+      <td class="mono">7,750</td>
+      <td class="mono">₹287.13</td>
+      <td class="mono accent">₹289.84</td>
+      <td class="mono">1</td>
+      <td class="mono">₹22,25,258</td>
+      <td class="mono">₹22,46,260</td>
+      <td class="mono"><span class="green">+₹21,002</span></td>
+      <td class="mono"><span class="green">0.94%</span></td>
+      <td class="mono">₹22,46,260</td>
+      <td class="mono">₹22,46,260</td>
+      <td style="font-size:10px;"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(7)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(7)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">9</td><td class="bold">cdsl</td>
+      <td style="font-size:10px;">NSE</td>
+      <td><span class="chip badge-green">Long</span></td>
+      <td class="mono">65</td>
+      <td class="mono">₹1,345.00</td>
+      <td class="mono accent">₹1,332.00</td>
+      <td class="mono">1</td>
+      <td class="mono">₹87,425</td>
+      <td class="mono">₹86,580</td>
+      <td class="mono"><span class="red">₹-845</span></td>
+      <td class="mono"><span class="red">-0.97%</span></td>
+      <td class="mono">₹86,580</td>
+      <td class="mono">₹86,580</td>
+      <td style="font-size:10px;"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(8)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(8)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">10</td><td class="bold">fmcgietf</td>
+      <td style="font-size:10px;">BSE</td>
+      <td><span class="chip badge-green">Long</span></td>
+      <td class="mono">1,000</td>
+      <td class="mono">₹56.61</td>
+      <td class="mono accent">₹55.96</td>
+      <td class="mono">1</td>
+      <td class="mono">₹56,610</td>
+      <td class="mono">₹55,960</td>
+      <td class="mono"><span class="red">₹-650</span></td>
+      <td class="mono"><span class="red">-1.15%</span></td>
+      <td class="mono">₹55,960</td>
+      <td class="mono">₹55,960</td>
+      <td style="font-size:10px;"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(9)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(9)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">11</td><td class="bold">Bankbees</td>
+      <td style="font-size:10px;">BSE</td>
+      <td><span class="chip badge-green">Long</span></td>
+      <td class="mono">200</td>
+      <td class="mono">₹631.50</td>
+      <td class="mono accent">₹631.02</td>
+      <td class="mono">1</td>
+      <td class="mono">₹1,26,300</td>
+      <td class="mono">₹1,26,204</td>
+      <td class="mono"><span class="red">₹-96</span></td>
+      <td class="mono"><span class="red">-0.08%</span></td>
+      <td class="mono">₹1,26,204</td>
+      <td class="mono">₹1,26,204</td>
+      <td style="font-size:10px;"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(10)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(10)">DEL</button>
+      </td>
+    </tr><tr>
+      <td class="mono">12</td><td class="bold">irctc</td>
+      <td style="font-size:10px;">NSE</td>
+      <td><span class="chip badge-green">Long</span></td>
+      <td class="mono">100</td>
+      <td class="mono">₹614.50</td>
+      <td class="mono accent">₹613.75</td>
+      <td class="mono">1</td>
+      <td class="mono">₹61,450</td>
+      <td class="mono">₹61,375</td>
+      <td class="mono"><span class="red">₹-75</span></td>
+      <td class="mono"><span class="red">-0.12%</span></td>
+      <td class="mono">₹61,375</td>
+      <td class="mono">₹61,375</td>
+      <td style="font-size:10px;"></td>
+      <td>
+        <button class="btn btn-ghost" style="padding:3px 7px;font-size:8px;" onclick="editEquity(11)">EDIT</button>
+        <button class="btn btn-danger" style="padding:3px 7px;font-size:8px;margin-left:3px;" onclick="deleteEquity(11)">DEL</button>
+      </td>
+    </tr></tbody>
+      <tfoot><tr class="total-row"><td colspan="8">EQUITY TOTALS</td><td id="eq-t-inv">₹32,07,014</td><td id="eq-t-curr">₹32,43,208</td><td id="eq-t-pnl"><span class="green">+₹36,194</span></td><td id="eq-t-pnlpct"><span class="green">1.13%</span></td><td id="eq-t-delta">₹32,43,208</td><td id="eq-t-betadelta">₹32,43,208</td><td></td><td></td></tr></tfoot>
     </table>
     </div>
   </div>
   <div class="g4">
-    <div class="card card-green"><div class="kpi-label">Total Invested ₹</div><div class="kpi-val kpi-sm" id="e-inv">—</div></div>
-    <div class="card card-accent"><div class="kpi-label">Current Value ₹</div><div class="kpi-val kpi-sm accent" id="e-curr">—</div></div>
-    <div class="card card-green"><div class="kpi-label">Unrealised P&L ₹</div><div class="kpi-val kpi-sm" id="e-pnl">—</div></div>
-    <div class="card card-purple"><div class="kpi-label">Beta-Adj Delta ₹</div><div class="kpi-val kpi-sm purple" id="e-beta">—</div></div>
+    <div class="card card-green"><div class="kpi-label">Total Invested ₹</div><div class="kpi-val kpi-sm" id="e-inv">₹32,07,014</div></div>
+    <div class="card card-accent"><div class="kpi-label">Current Value ₹</div><div class="kpi-val kpi-sm accent" id="e-curr">₹32,43,208</div></div>
+    <div class="card card-green"><div class="kpi-label">Unrealised P&amp;L ₹</div><div class="kpi-val kpi-sm" id="e-pnl"><span class="green">+₹36,194</span></div></div>
+    <div class="card card-purple"><div class="kpi-label">Beta-Adj Delta ₹</div><div class="kpi-val kpi-sm purple" id="e-beta">₹32,43,208</div></div>
   </div>
 </div>
 
 <!-- ══════════════════════════════ SCENARIO -->
 <div id="page-scenario" class="page">
   <div class="card mb12">
-    <div class="stitle">SCENARIO P&L — FULL BLACK-SCHOLES AT EACH SPOT LEVEL</div>
-    <p style="font-size:10px;color:var(--text3);margin-bottom:12px;">P&L = BS price at scenario spot − Entry BS price × Net Qty. Uses live VIX as IV (when VIX mode ON) and auto-calculated DTE from expiry date. Gamma curvature fully captured — not a linear approximation.</p>
-    <div style="overflow-x:auto;"><table class="scen-tbl" id="scen-tbl"></table></div>
+    <div class="stitle">SCENARIO P&amp;L — FULL BLACK-SCHOLES AT EACH SPOT LEVEL</div>
+    <p style="font-size:10px;color:var(--text3);margin-bottom:12px;">P&amp;L = BS price at scenario spot − Entry BS price × Net Qty. Uses live VIX as IV (when VIX mode ON) and auto-calculated DTE from expiry date. Gamma curvature fully captured — not a linear approximation.</p>
+    <div style="overflow-x:auto;"><table class="scen-tbl" id="scen-tbl"><thead><tr><th class="lbl">POSITION</th><th class="">-10%</th><th class="">-5%</th><th class="">-3%</th><th class="">-2%</th><th class="">-1%</th><th class="highlight">0%</th><th class="">+1%</th><th class="">+2%</th><th class="">+3%</th><th class="">+5%</th><th class="">+10%</th><th class="">+15%</th></tr><tr><th class="lbl" style="color:var(--text3);font-size:9px;">Nifty spot</th><td class="" style="text-align:center;font-size:9px;color:var(--text3);">23,067</td><td class="" style="text-align:center;font-size:9px;color:var(--text3);">24,349</td><td class="" style="text-align:center;font-size:9px;color:var(--text3);">24,861</td><td class="" style="text-align:center;font-size:9px;color:var(--text3);">25,118</td><td class="" style="text-align:center;font-size:9px;color:var(--text3);">25,374</td><td class="highlight" style="text-align:center;font-size:9px;color:var(--text3);">25,630</td><td class="" style="text-align:center;font-size:9px;color:var(--text3);">25,887</td><td class="" style="text-align:center;font-size:9px;color:var(--text3);">26,143</td><td class="" style="text-align:center;font-size:9px;color:var(--text3);">26,399</td><td class="" style="text-align:center;font-size:9px;color:var(--text3);">26,912</td><td class="" style="text-align:center;font-size:9px;color:var(--text3);">28,193</td><td class="" style="text-align:center;font-size:9px;color:var(--text3);">29,475</td></tr></thead><tbody><tr><td class="lbl">NIFTY Put Buy x1L</td><td class="pos">+1,16,056</td><td class="pos">+41,027</td><td class="pos">+18,651</td><td class="pos">+9,920</td><td class="pos">+2,874</td><td class="neg highlight">-2,583</td><td class="neg">-6,632</td><td class="neg">-9,508</td><td class="neg">-11,461</td><td class="neg">-13,518</td><td class="neg">-14,509</td><td class="neg">-14,541</td></tr><tr><td class="lbl">NIFTY Put Buy x1L</td><td class="pos">+1,07,384</td><td class="pos">+35,396</td><td class="pos">+15,488</td><td class="pos">+8,075</td><td class="pos">+2,294</td><td class="neg highlight">-2,024</td><td class="neg">-5,111</td><td class="neg">-7,219</td><td class="neg">-8,594</td><td class="neg">-9,963</td><td class="neg">-10,557</td><td class="neg">-10,573</td></tr><tr><td class="lbl">NIFTY Future Buy x2L</td><td class="neg">-3,16,267</td><td class="neg">-1,49,670</td><td class="neg">-83,032</td><td class="neg">-49,713</td><td class="neg">-16,393</td><td class="pos highlight">+16,926</td><td class="pos">+50,245</td><td class="pos">+83,565</td><td class="pos">+1,16,884</td><td class="pos">+1,83,522</td><td class="pos">+3,50,119</td><td class="pos">+5,16,715</td></tr><tr><td class="lbl" style="color:var(--green);">cpseetf Long x1000sh</td><td class="neg">-10,267</td><td class="neg">-5,134</td><td class="neg">-3,080</td><td class="neg">-2,053</td><td class="neg">-1,027</td><td class="zero highlight">0</td><td class="pos">+1,027</td><td class="pos">+2,053</td><td class="pos">+3,080</td><td class="pos">+5,134</td><td class="pos">+10,267</td><td class="pos">+15,401</td></tr><tr><td class="lbl" style="color:var(--green);">infrabees Long x100sh</td><td class="neg">-9,990</td><td class="neg">-4,995</td><td class="neg">-2,997</td><td class="neg">-1,998</td><td class="neg">-999</td><td class="zero highlight">0</td><td class="pos">+999</td><td class="pos">+1,998</td><td class="pos">+2,997</td><td class="pos">+4,995</td><td class="pos">+9,990</td><td class="pos">+14,985</td></tr><tr><td class="lbl" style="color:var(--green);">irctc Long x300sh</td><td class="neg">-18,522</td><td class="neg">-9,261</td><td class="neg">-5,557</td><td class="neg">-3,704</td><td class="neg">-1,852</td><td class="zero highlight">0</td><td class="pos">+1,852</td><td class="pos">+3,704</td><td class="pos">+5,557</td><td class="pos">+9,261</td><td class="pos">+18,522</td><td class="pos">+27,783</td></tr><tr><td class="lbl" style="color:var(--green);">jiofin Long x300sh</td><td class="neg">-7,731</td><td class="neg">-3,866</td><td class="neg">-2,319</td><td class="neg">-1,546</td><td class="neg">-773</td><td class="zero highlight">0</td><td class="pos">+773</td><td class="pos">+1,546</td><td class="pos">+2,319</td><td class="pos">+3,866</td><td class="pos">+7,731</td><td class="pos">+11,597</td></tr><tr><td class="lbl" style="color:var(--green);">lgindia Long x28sh</td><td class="neg">-4,406</td><td class="neg">-2,203</td><td class="neg">-1,322</td><td class="neg">-881</td><td class="neg">-441</td><td class="zero highlight">0</td><td class="pos">+441</td><td class="pos">+881</td><td class="pos">+1,322</td><td class="pos">+2,203</td><td class="pos">+4,406</td><td class="pos">+6,608</td></tr><tr><td class="lbl" style="color:var(--green);">morealty Long x1750sh</td><td class="neg">-14,110</td><td class="neg">-7,055</td><td class="neg">-4,233</td><td class="neg">-2,822</td><td class="neg">-1,411</td><td class="zero highlight">0</td><td class="pos">+1,411</td><td class="pos">+2,822</td><td class="pos">+4,233</td><td class="pos">+7,055</td><td class="pos">+14,110</td><td class="pos">+21,165</td></tr><tr><td class="lbl" style="color:var(--green);">nsdl Long x18sh</td><td class="neg">-1,657</td><td class="neg">-828</td><td class="neg">-497</td><td class="neg">-331</td><td class="neg">-166</td><td class="zero highlight">0</td><td class="pos">+166</td><td class="pos">+331</td><td class="pos">+497</td><td class="pos">+828</td><td class="pos">+1,657</td><td class="pos">+2,485</td></tr><tr><td class="lbl" style="color:var(--green);">niftybees Long x7750sh</td><td class="neg">-2,24,626</td><td class="neg">-1,12,313</td><td class="neg">-67,388</td><td class="neg">-44,925</td><td class="neg">-22,463</td><td class="zero highlight">0</td><td class="pos">+22,463</td><td class="pos">+44,925</td><td class="pos">+67,388</td><td class="pos">+1,12,313</td><td class="pos">+2,24,626</td><td class="pos">+3,36,939</td></tr><tr><td class="lbl" style="color:var(--green);">cdsl Long x65sh</td><td class="neg">-8,658</td><td class="neg">-4,329</td><td class="neg">-2,597</td><td class="neg">-1,732</td><td class="neg">-866</td><td class="zero highlight">0</td><td class="pos">+866</td><td class="pos">+1,732</td><td class="pos">+2,597</td><td class="pos">+4,329</td><td class="pos">+8,658</td><td class="pos">+12,987</td></tr><tr><td class="lbl" style="color:var(--green);">fmcgietf Long x1000sh</td><td class="neg">-5,596</td><td class="neg">-2,798</td><td class="neg">-1,679</td><td class="neg">-1,119</td><td class="neg">-560</td><td class="zero highlight">0</td><td class="pos">+560</td><td class="pos">+1,119</td><td class="pos">+1,679</td><td class="pos">+2,798</td><td class="pos">+5,596</td><td class="pos">+8,394</td></tr><tr><td class="lbl" style="color:var(--green);">Bankbees Long x200sh</td><td class="neg">-12,620</td><td class="neg">-6,310</td><td class="neg">-3,786</td><td class="neg">-2,524</td><td class="neg">-1,262</td><td class="zero highlight">0</td><td class="pos">+1,262</td><td class="pos">+2,524</td><td class="pos">+3,786</td><td class="pos">+6,310</td><td class="pos">+12,620</td><td class="pos">+18,931</td></tr><tr><td class="lbl" style="color:var(--green);">irctc Long x100sh</td><td class="neg">-6,138</td><td class="neg">-3,069</td><td class="neg">-1,841</td><td class="neg">-1,228</td><td class="neg">-614</td><td class="zero highlight">0</td><td class="pos">+614</td><td class="pos">+1,228</td><td class="pos">+1,841</td><td class="pos">+3,069</td><td class="pos">+6,138</td><td class="pos">+9,206</td></tr><tr class="total-row"><td class="lbl">OPT/FUT TOTAL</td><td class="neg">₹-92,826</td><td class="neg">₹-73,247</td><td class="neg">₹-48,893</td><td class="neg">₹-31,717</td><td class="neg">₹-11,225</td><td class="pos highlight">+₹12,319</td><td class="pos">+₹38,502</td><td class="pos">+₹66,838</td><td class="pos">+₹96,828</td><td class="pos">+₹1,60,041</td><td class="pos">+₹3,25,053</td><td class="pos">+₹4,91,602</td></tr><tr class="total-row"><td class="lbl" style="color:var(--green);">EQUITY TOTAL</td><td class="neg">₹-3,24,321</td><td class="neg">₹-1,62,160</td><td class="neg">₹-97,296</td><td class="neg">₹-64,864</td><td class="neg">₹-32,432</td><td class="zero highlight">₹0</td><td class="pos">+₹32,432</td><td class="pos">+₹64,864</td><td class="pos">+₹97,296</td><td class="pos">+₹1,62,160</td><td class="pos">+₹3,24,321</td><td class="pos">+₹4,86,481</td></tr><tr class="total-row" style="background:rgba(0,200,255,.05);"><td class="lbl" style="color:var(--accent);">⭐ COMBINED</td><td class="neg" style="font-weight:700;">₹-4,17,147</td><td class="neg" style="font-weight:700;">₹-2,35,408</td><td class="neg" style="font-weight:700;">₹-1,46,189</td><td class="neg" style="font-weight:700;">₹-96,582</td><td class="neg" style="font-weight:700;">₹-43,657</td><td class="pos highlight" style="font-weight:700;">+₹12,319</td><td class="pos" style="font-weight:700;">+₹70,935</td><td class="pos" style="font-weight:700;">+₹1,31,702</td><td class="pos" style="font-weight:700;">+₹1,94,124</td><td class="pos" style="font-weight:700;">+₹3,22,202</td><td class="pos" style="font-weight:700;">+₹6,49,374</td><td class="pos" style="font-weight:700;">+₹9,78,083</td></tr></tbody></table></div>
   </div>
   <div class="card">
     <div class="stitle">DYNAMIC GREEKS AT EACH SCENARIO SPOT — DELTA CHANGES WITH MARKET</div>
     <p style="font-size:10px;color:var(--text3);margin-bottom:12px;">This shows exactly how your delta, gamma, theta and vega shift as Nifty moves. Each column is fully recalculated at that spot price via Black-Scholes — not interpolated. This is why delta changes and is not the same across columns.</p>
-    <div style="overflow-x:auto;"><table class="scen-tbl" id="scen-greeks-tbl"></table></div>
+    <div style="overflow-x:auto;"><table class="scen-tbl" id="scen-greeks-tbl"><thead><tr><th class="lbl">GREEK AT SPOT →</th><th class="">-10%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">23,067</span></th><th class="">-5%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">24,349</span></th><th class="">-3%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">24,861</span></th><th class="">-2%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">25,118</span></th><th class="">-1%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">25,374</span></th><th class="highlight">0%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">25,630</span></th><th class="">+1%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">25,887</span></th><th class="">+2%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">26,143</span></th><th class="">+3%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">26,399</span></th><th class="">+5%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">26,912</span></th><th class="">+10%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">28,193</span></th><th class="">+15%<br><span style="font-weight:400;color:var(--text3);font-size:7px;">29,475</span></th></tr></thead><tbody><tr><td class="lbl" title="Delta of entire options/futures book recalculated at each spot via Black-Scholes. Changes because of gamma.">Net Delta (units)<br><span style="font-size:8px;color:var(--text3);">Delta of entire options/futures book recalculated ...</span></td><td class="" style="color:var(--green);font-weight:400;">3.283</td><td class="" style="color:var(--green);font-weight:400;">35.297</td><td class="" style="color:var(--green);font-weight:400;">60.387</td><td class="" style="color:var(--green);font-weight:400;">73.596</td><td class="" style="color:var(--green);font-weight:400;">86.135</td><td class="highlight" style="color:var(--green);font-weight:700;">97.312</td><td class="" style="color:var(--green);font-weight:400;">106.687</td><td class="" style="color:var(--green);font-weight:400;">114.097</td><td class="" style="color:var(--green);font-weight:400;">119.629</td><td class="" style="color:var(--green);font-weight:400;">126.144</td><td class="" style="color:var(--green);font-weight:400;">129.849</td><td class="" style="color:var(--green);font-weight:400;">129.998</td></tr><tr><td class="lbl" title="Change in net delta from current spot. Negative = delta falling (options hedging the future). Positive = delta rising (unhedged).">Delta Change vs 0%<br><span style="font-size:8px;color:var(--text3);">Change in net delta from current spot. Negative = ...</span></td><td class="" style="color:var(--green);font-weight:400;">-94.029</td><td class="" style="color:var(--green);font-weight:400;">-62.015</td><td class="" style="color:var(--green);font-weight:400;">-36.925</td><td class="" style="color:var(--green);font-weight:400;">-23.716</td><td class="" style="color:var(--green);font-weight:400;">-11.177</td><td class="highlight" style="color:var(--red);font-weight:700;">0.000</td><td class="" style="color:var(--red);font-weight:400;">+9.374</td><td class="" style="color:var(--red);font-weight:400;">+16.785</td><td class="" style="color:var(--red);font-weight:400;">+22.316</td><td class="" style="color:var(--red);font-weight:400;">+28.832</td><td class="" style="color:var(--red);font-weight:400;">+32.537</td><td class="" style="color:var(--red);font-weight:400;">+32.686</td></tr><tr><td class="lbl" title="Net delta × scenario spot = signed ₹ directional exposure. Positive = net long bias. Watch how puts reduce this on downmoves.">Delta Exp ₹ (Opt/Fut)<br><span style="font-size:8px;color:var(--text3);">Net delta × scenario spot = signed ₹ directional e...</span></td><td class="" style="color:var(--green);font-weight:400;">+₹75,735</td><td class="" style="color:var(--green);font-weight:400;">+₹8,59,432</td><td class="" style="color:var(--green);font-weight:400;">+₹15,01,292</td><td class="" style="color:var(--green);font-weight:400;">+₹18,48,556</td><td class="" style="color:var(--green);font-weight:400;">+₹21,85,576</td><td class="highlight" style="color:var(--green);font-weight:700;">+₹24,94,131</td><td class="" style="color:var(--green);font-weight:400;">+₹27,61,744</td><td class="" style="color:var(--green);font-weight:400;">+₹29,82,823</td><td class="" style="color:var(--green);font-weight:400;">+₹31,58,087</td><td class="" style="color:var(--green);font-weight:400;">+₹33,94,756</td><td class="" style="color:var(--green);font-weight:400;">+₹36,60,858</td><td class="" style="color:var(--green);font-weight:400;">+₹38,31,652</td></tr><tr><td class="lbl" title="Rate of delta change. Negative (short gamma) means your delta worsens as spot moves away from strikes.">Net Gamma<br><span style="font-size:8px;color:var(--text3);">Rate of delta change. Negative (short gamma) means...</span></td><td class="" style="color:var(--green);font-weight:400;">0.00828</td><td class="" style="color:var(--green);font-weight:400;">0.04411</td><td class="" style="color:var(--green);font-weight:400;">0.05178</td><td class="" style="color:var(--green);font-weight:400;">0.05074</td><td class="" style="color:var(--green);font-weight:400;">0.04664</td><td class="highlight" style="color:var(--green);font-weight:700;">0.04029</td><td class="" style="color:var(--green);font-weight:400;">0.03276</td><td class="" style="color:var(--green);font-weight:400;">0.02513</td><td class="" style="color:var(--green);font-weight:400;">0.01821</td><td class="" style="color:var(--green);font-weight:400;">0.00811</td><td class="" style="color:var(--green);font-weight:400;">0.00044</td><td class="" style="color:var(--green);font-weight:400;">0.00001</td></tr><tr><td class="lbl" title="Daily time decay at each scenario. Theta increases as options approach ATM.">Net Theta / Day ₹<br><span style="font-size:8px;color:var(--text3);">Daily time decay at each scenario. Theta increases...</span></td><td class="" style="color:var(--green);font-weight:400;">₹444</td><td class="" style="color:var(--red);font-weight:400;">₹-289</td><td class="" style="color:var(--red);font-weight:400;">₹-559</td><td class="" style="color:var(--red);font-weight:400;">₹-618</td><td class="" style="color:var(--red);font-weight:400;">₹-620</td><td class="highlight" style="color:var(--red);font-weight:700;">₹-573</td><td class="" style="color:var(--red);font-weight:400;">₹-492</td><td class="" style="color:var(--red);font-weight:400;">₹-395</td><td class="" style="color:var(--red);font-weight:400;">₹-298</td><td class="" style="color:var(--red);font-weight:400;">₹-142</td><td class="" style="color:var(--red);font-weight:400;">₹-9</td><td class="" style="color:var(--red);font-weight:400;">₹-0</td></tr><tr><td class="lbl" title="Sensitivity to a 1% IV (VIX) change at each scenario. Negative = VIX spike hurts.">Net Vega / 1% IV ₹<br><span style="font-size:8px;color:var(--text3);">Sensitivity to a 1% IV (VIX) change at each scenar...</span></td><td class="" style="color:var(--green);font-weight:400;">₹496</td><td class="" style="color:var(--green);font-weight:400;">₹2,947</td><td class="" style="color:var(--green);font-weight:400;">₹3,606</td><td class="" style="color:var(--green);font-weight:400;">₹3,607</td><td class="" style="color:var(--green);font-weight:400;">₹3,384</td><td class="highlight" style="color:var(--green);font-weight:700;">₹2,982</td><td class="" style="color:var(--green);font-weight:400;">₹2,474</td><td class="" style="color:var(--green);font-weight:400;">₹1,935</td><td class="" style="color:var(--green);font-weight:400;">₹1,430</td><td class="" style="color:var(--green);font-weight:400;">₹662</td><td class="" style="color:var(--green);font-weight:400;">₹40</td><td class="" style="color:var(--green);font-weight:400;">₹1</td></tr><tr><td class="lbl" title="NiftyBees + ETF exposure changes linearly (beta × price × move). Not BS-driven.">Equity Delta ₹<br><span style="font-size:8px;color:var(--text3);">NiftyBees + ETF exposure changes linearly (beta × ...</span></td><td class="" style="color:var(--green);font-weight:400;">₹29,18,887</td><td class="" style="color:var(--green);font-weight:400;">₹30,81,047</td><td class="" style="color:var(--green);font-weight:400;">₹31,45,911</td><td class="" style="color:var(--green);font-weight:400;">₹31,78,344</td><td class="" style="color:var(--green);font-weight:400;">₹32,10,776</td><td class="highlight" style="color:var(--green);font-weight:700;">₹32,43,208</td><td class="" style="color:var(--green);font-weight:400;">₹32,75,640</td><td class="" style="color:var(--green);font-weight:400;">₹33,08,072</td><td class="" style="color:var(--green);font-weight:400;">₹33,40,504</td><td class="" style="color:var(--green);font-weight:400;">₹34,05,368</td><td class="" style="color:var(--green);font-weight:400;">₹35,67,528</td><td class="" style="color:var(--green);font-weight:400;">₹37,29,689</td></tr><tr><td class="lbl" title="Options/Futures delta exposure + Equity delta at each scenario. Positive = net long. Negative = net short.">COMBINED Delta ₹<br><span style="font-size:8px;color:var(--text3);">Options/Futures delta exposure + Equity delta at e...</span></td><td class="" style="color:var(--accent);font-weight:400;">+₹29,94,622</td><td class="" style="color:var(--accent);font-weight:400;">+₹39,40,479</td><td class="" style="color:var(--accent);font-weight:400;">+₹46,47,203</td><td class="" style="color:var(--accent);font-weight:400;">+₹50,26,900</td><td class="" style="color:var(--accent);font-weight:400;">+₹53,96,352</td><td class="highlight" style="color:var(--accent);font-weight:700;">+₹57,37,339</td><td class="" style="color:var(--accent);font-weight:400;">+₹60,37,384</td><td class="" style="color:var(--accent);font-weight:400;">+₹62,90,895</td><td class="" style="color:var(--accent);font-weight:400;">+₹64,98,591</td><td class="" style="color:var(--accent);font-weight:400;">+₹68,00,124</td><td class="" style="color:var(--accent);font-weight:400;">+₹72,28,386</td><td class="" style="color:var(--accent);font-weight:400;">+₹75,61,341</td></tr></tbody></table></div>
   </div>
 </div>
 
@@ -462,11 +822,125 @@ input,select{font-size:16px !important;}
 <!-- ══════════════════════════════ ALERTS -->
 <div id="page-alerts" class="page">
   <div class="g2 mb12">
-    <div><div class="stitle">LIVE ALERT STATUS</div><div id="alert-list"></div></div>
-    <div><div class="stitle">CRITICAL PRICE LEVELS</div><div id="level-list"></div></div>
+    <div><div class="stitle">LIVE ALERT STATUS</div><div id="alert-list"><div class="alert-box info mb8">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <strong>PUT SIDE STOP-LOSS</strong>
+        <span style="font-family:var(--mono);font-size:9px;">✓ CLEAR</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:13px;margin-bottom:5px;">25,200</div>
+      <div style="font-size:10px;"><strong>ACTION:</strong> Close short PE for ALL 5 clients immediately. Do not wait for EOD.</div>
+    </div><div class="alert-box info mb8">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <strong>CALL SIDE STOP-LOSS</strong>
+        <span style="font-family:var(--mono);font-size:9px;">✓ CLEAR</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:13px;margin-bottom:5px;">26,200</div>
+      <div style="font-size:10px;"><strong>ACTION:</strong> Close short CE for A &amp; B. C, D, E have no short calls — hold.</div>
+    </div><div class="alert-box ok mb8">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <strong>VIX ALERT</strong>
+        <span style="font-family:var(--mono);font-size:9px;">✓ CLEAR</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:13px;margin-bottom:5px;">14.15</div>
+      <div style="font-size:10px;"><strong>ACTION:</strong> Best zone. Full iron condor A&amp;B. Full spreads C D E. Weekly strangles for A.</div>
+    </div><div class="alert-box ok mb8">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <strong>DTE DANGER ZONE</strong>
+        <span style="font-family:var(--mono);font-size:9px;">✓ CLEAR</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:13px;margin-bottom:5px;">40 days left</div>
+      <div style="font-size:10px;"><strong>ACTION:</strong> Hold. Theta in your favour.</div>
+    </div><div class="alert-box info mb8">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <strong>PROFIT BOOKING</strong>
+        <span style="font-family:var(--mono);font-size:9px;">✓ CLEAR</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:13px;margin-bottom:5px;">70% of credit</div>
+      <div style="font-size:10px;"><strong>ACTION:</strong> When 70% of max credit captured → close and redeploy into next expiry.</div>
+    </div><div class="alert-box ok mb8">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <strong>MARGIN UTILISATION</strong>
+        <span style="font-family:var(--mono);font-size:9px;">✓ CLEAR</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:13px;margin-bottom:5px;">&lt; 80%</div>
+      <div style="font-size:10px;"><strong>ACTION:</strong> If any account hits 85% margin, close the most OTM leg first.</div>
+    </div></div></div>
+    <div><div class="stitle">CRITICAL PRICE LEVELS</div><div id="level-list"><div class="alert-box warning mb8">
+      <div style="display:flex;justify-content:space-between;">
+        <strong>Long PE Hedge Floor</strong>
+        <span style="font-family:var(--mono);font-size:13px;">24,800</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;margin-top:3px;color:var(--text3);">
+        ▲ 830.2 pts (3.24%) above spot
+        
+      </div>
+    </div><div class="alert-box warning mb8">
+      <div style="display:flex;justify-content:space-between;">
+        <strong>Short PE — EXIT TRIGGER</strong>
+        <span style="font-family:var(--mono);font-size:13px;">25,200</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;margin-top:3px;color:var(--text3);">
+        ▲ 430.2 pts (1.68%) above spot
+        
+      </div>
+    </div><div class="alert-box warning mb8">
+      <div style="display:flex;justify-content:space-between;">
+        <strong>Short PE +200 Buffer</strong>
+        <span style="font-family:var(--mono);font-size:13px;">25,400</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;margin-top:3px;color:var(--text3);">
+        ▲ 230.2 pts (0.90%) above spot
+        
+      </div>
+    </div><div class="alert-box info mb8">
+      <div style="display:flex;justify-content:space-between;">
+        <strong>NIFTY SPOT</strong>
+        <span style="font-family:var(--mono);font-size:13px;">25,630.2</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;margin-top:3px;color:var(--text3);">
+        ◉ CURRENT
+        
+      </div>
+    </div><div class="alert-box info mb8">
+      <div style="display:flex;justify-content:space-between;">
+        <strong>Spread Midpoint</strong>
+        <span style="font-family:var(--mono);font-size:13px;">25,700</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;margin-top:3px;color:var(--text3);">
+        ▼ 69.8 pts (0.27%) below spot
+        
+      </div>
+    </div><div class="alert-box warning mb8">
+      <div style="display:flex;justify-content:space-between;">
+        <strong>Short CE −200 Buffer</strong>
+        <span style="font-family:var(--mono);font-size:13px;">26,000</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;margin-top:3px;color:var(--text3);">
+        ▼ 369.8 pts (1.44%) below spot
+        
+      </div>
+    </div><div class="alert-box warning mb8">
+      <div style="display:flex;justify-content:space-between;">
+        <strong>Short CE — EXIT TRIGGER</strong>
+        <span style="font-family:var(--mono);font-size:13px;">26,200</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;margin-top:3px;color:var(--text3);">
+        ▼ 569.8 pts (2.22%) below spot
+        
+      </div>
+    </div><div class="alert-box warning mb8">
+      <div style="display:flex;justify-content:space-between;">
+        <strong>Long CE Hedge Cap</strong>
+        <span style="font-family:var(--mono);font-size:13px;">26,500</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;margin-top:3px;color:var(--text3);">
+        ▼ 869.8 pts (3.39%) below spot
+        
+      </div>
+    </div></div></div>
   </div>
   <div class="stitle">NON-NEGOTIABLE RULES</div>
-  <div id="rules-list"></div>
+  <div id="rules-list"><div class="alert-box danger mb8"><strong>Never hold past 7 DTE.</strong> Close ALL positions 7 days before expiry. Gamma spikes unpredictably. No exceptions ever.</div><div class="alert-box warning mb8"><strong>70% profit = close.</strong> Book it. Do not hold for last 30% — gamma and weekend risk are not worth it.</div><div class="alert-box danger mb8"><strong>Nifty below Short PE = exit immediately.</strong> No averaging. No waiting.</div><div class="alert-box warning mb8"><strong>Nifty above Short CE = exit CE for A &amp; B.</strong> C, D, E have no short calls — they hold.</div><div class="alert-box warning mb8"><strong>VIX &gt; 17 = stop strangles.</strong> Spreads only. Buy 24,500 PE tail hedge for A &amp; B.</div><div class="alert-box ok mb8"><strong>Margin &lt; 80% always.</strong> Close most OTM leg if any account hits 85%.</div><div class="alert-box info mb8"><strong>No stock selection.</strong> Alpha comes from the options structure. NiftyBees + ETF core only.</div></div>
 </div>
 
 <!-- ══════════════════════════════ SETTINGS -->
@@ -489,7 +963,7 @@ input,select{font-size:16px !important;}
               <input type="checkbox" id="s-use-vix" style="width:16px;height:16px;accent-color:var(--orange);" onchange="APP.settings.useLiveVix=this.checked;saveState();renderAll();">
               <span>Use India VIX as live IV for all positions</span>
             </label>
-            <span style="font-size:10px;color:var(--text3);">VIX <span style="color:var(--orange);">&#9889;</span> = India 30-day Nifty ATM IV. Updates every 1min with Fetch Live.</span>
+            <span style="font-size:10px;color:var(--text3);">VIX <span style="color:var(--orange);">⚡</span> = India 30-day Nifty ATM IV. Updates every 1min with Fetch Live.</span>
           </div>
           <div class="inp-hint" style="margin-top:4px;">When ON: all delta/gamma/theta/vega recalculate with live VIX automatically. When OFF: uses stored entry IV per position.</div>
         </div>
@@ -502,7 +976,7 @@ input,select{font-size:16px !important;}
         <div class="inp-group"><label>LONG CE STRIKE (hedge)</label><input type="number" id="s-long-ce" step="50"></div>
       </div>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="saveSettings()">SAVE & REFRESH</button>
+        <button class="btn btn-primary" onclick="saveSettings()">SAVE &amp; REFRESH</button>
         <button class="btn btn-ghost" onclick="loadDefaults()">RESET TO DEFAULTS</button>
       </div>
     </div>
@@ -515,11 +989,47 @@ input,select{font-size:16px !important;}
       </div>
       <div id="symbol-cfg">
         <div class="g2 mb8">
-          <div class="inp-group"><label>NIFTY SYMBOL</label><input id="sym-nifty" value="^NSEI" readonly><div class="inp-hint">Yahoo Finance: ^NSEI</div></div>
-          <div class="inp-group"><label>VIX SYMBOL</label><input id="sym-vix" value="^INDIAVIX" readonly><div class="inp-hint">Yahoo Finance: ^INDIAVIX</div></div>
+          <div class="inp-group"><label>NIFTY SYMBOL</label><input id="sym-nifty" value="^NSEI" readonly=""><div class="inp-hint">Yahoo Finance: ^NSEI</div></div>
+          <div class="inp-group"><label>VIX SYMBOL</label><input id="sym-vix" value="^INDIAVIX" readonly=""><div class="inp-hint">Yahoo Finance: ^INDIAVIX</div></div>
         </div>
         <div class="stitle">EQUITY SYMBOLS (Yahoo Finance format)</div>
-        <div id="eq-symbols-list" style="margin-bottom:10px;"></div>
+        <div id="eq-symbols-list" style="margin-bottom:10px;"><div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">cpseetf</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="cpseetf.ns" placeholder="SYMBOL.NS" onchange="APP.equity[0].yahoo=this.value;saveState();">
+    </div><div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">infrabees</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="INFRABEES.NS" placeholder="SYMBOL.NS" onchange="APP.equity[1].yahoo=this.value;saveState();">
+    </div><div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">irctc</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="irctc.ns" placeholder="SYMBOL.NS" onchange="APP.equity[2].yahoo=this.value;saveState();">
+    </div><div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">jiofin</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="jiofin.ns" placeholder="SYMBOL.NS" onchange="APP.equity[3].yahoo=this.value;saveState();">
+    </div><div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">lgindia</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="lgeindia.ns" placeholder="SYMBOL.NS" onchange="APP.equity[4].yahoo=this.value;saveState();">
+    </div><div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">morealty</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="morealty.ns" placeholder="SYMBOL.NS" onchange="APP.equity[5].yahoo=this.value;saveState();">
+    </div><div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">nsdl</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="NSDL.BO" placeholder="SYMBOL.NS" onchange="APP.equity[6].yahoo=this.value;saveState();">
+    </div><div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">niftybees</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="niftybees.ns" placeholder="SYMBOL.NS" onchange="APP.equity[7].yahoo=this.value;saveState();">
+    </div><div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">cdsl</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="cdsl.ns" placeholder="SYMBOL.NS" onchange="APP.equity[8].yahoo=this.value;saveState();">
+    </div><div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">fmcgietf</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="FMCGIETF.BO" placeholder="SYMBOL.NS" onchange="APP.equity[9].yahoo=this.value;saveState();">
+    </div><div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">Bankbees</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="BANKBEES.BO" placeholder="SYMBOL.NS" onchange="APP.equity[10].yahoo=this.value;saveState();">
+    </div><div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text2);width:100px;">irctc</span>
+      <input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;flex:1;" value="irctc.ns" placeholder="SYMBOL.NS" onchange="APP.equity[11].yahoo=this.value;saveState();">
+    </div></div>
       </div>
       <div class="btn-row">
         <button class="btn btn-green" onclick="fetchLivePrices()">⟳ FETCH LIVE PRICES NOW</button>
@@ -534,7 +1044,42 @@ input,select{font-size:16px !important;}
       <div class="stitle">CLIENT CONFIGURATION</div>
       <table class="tbl" id="client-cfg-tbl">
         <thead><tr><th>CLIENT</th><th>AUM ₹</th><th>LOTS</th><th>STRUCTURE</th><th>TARGET LOW ₹</th><th>TARGET HIGH ₹</th></tr></thead>
-        <tbody id="client-cfg-body"></tbody>
+        <tbody id="client-cfg-body"><tr>
+      <td class="bold accent mono" style="font-size:16px;">A</td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:110px;" value="5000000" onchange="APP.clients[0].aum=+this.value;saveState();renderAll();"></td>
+      <td class="mono">2</td>
+      <td style="font-size:10px;">Iron Condor + Weekly</td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:90px;" value="70000" onchange="APP.clients[0].targetLo=+this.value;saveState();renderAll();"></td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:90px;" value="85000" onchange="APP.clients[0].targetHi=+this.value;saveState();renderAll();"></td>
+    </tr><tr>
+      <td class="bold accent mono" style="font-size:16px;">B</td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:110px;" value="3600000" onchange="APP.clients[1].aum=+this.value;saveState();renderAll();"></td>
+      <td class="mono">2</td>
+      <td style="font-size:10px;">Iron Condor</td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:90px;" value="34500" onchange="APP.clients[1].targetLo=+this.value;saveState();renderAll();"></td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:90px;" value="42000" onchange="APP.clients[1].targetHi=+this.value;saveState();renderAll();"></td>
+    </tr><tr>
+      <td class="bold accent mono" style="font-size:16px;">C</td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:110px;" value="2000000" onchange="APP.clients[2].aum=+this.value;saveState();renderAll();"></td>
+      <td class="mono">2</td>
+      <td style="font-size:10px;">Bull Put Spread</td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:90px;" value="20700" onchange="APP.clients[2].targetLo=+this.value;saveState();renderAll();"></td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:90px;" value="23100" onchange="APP.clients[2].targetHi=+this.value;saveState();renderAll();"></td>
+    </tr><tr>
+      <td class="bold accent mono" style="font-size:16px;">D</td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:110px;" value="1650000" onchange="APP.clients[3].aum=+this.value;saveState();renderAll();"></td>
+      <td class="mono">2</td>
+      <td style="font-size:10px;">Bull Put Spread</td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:90px;" value="18900" onchange="APP.clients[3].targetLo=+this.value;saveState();renderAll();"></td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:90px;" value="20700" onchange="APP.clients[3].targetHi=+this.value;saveState();renderAll();"></td>
+    </tr><tr>
+      <td class="bold accent mono" style="font-size:16px;">E</td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:110px;" value="1200000" onchange="APP.clients[4].aum=+this.value;saveState();renderAll();"></td>
+      <td class="mono">1</td>
+      <td style="font-size:10px;">Single Bull Put</td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:90px;" value="10650" onchange="APP.clients[4].targetLo=+this.value;saveState();renderAll();"></td>
+      <td><input style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 7px;width:90px;" value="14000" onchange="APP.clients[4].targetHi=+this.value;saveState();renderAll();"></td>
+    </tr></tbody>
       </table>
     </div>
     <div class="card">
@@ -545,22 +1090,22 @@ input,select{font-size:16px !important;}
         <button class="btn btn-ghost" onclick="loadFromFile()">↑ IMPORT JSON</button>
         <input type="file" id="file-import" accept=".json" style="display:none" onchange="importData(event)">
       </div>
-      <div id="storage-info" class="kpi-sub"></div>
+      <div id="storage-info" class="kpi-sub">localStorage · 2.9 KB · Persists across sessions · ☁ Firebase sync ON</div>
     </div>
   </div>
 </div>
 
 
 <!-- ══════════════════════════════ SYNC SETUP PAGE -->
-<div id="page-sync" class="page">
+<div id="page-sync" class="page active">
   <div class="g2 mb12">
 
     <!-- Step-by-step setup card -->
     <div class="card card-orange">
       <div class="stitle">☁ FIREBASE SYNC SETUP — ONE TIME</div>
       <div id="sync-status-bar" class="alert-box info mb12" style="font-family:var(--mono);font-size:11px;">
-        <strong id="sync-status-title">STATUS: NOT CONFIGURED</strong><br>
-        <span id="sync-status-msg">Follow the steps below to enable multi-device sync. Takes ~8 minutes.</span>
+        <strong id="sync-status-title">STATUS: CONNECTED — SYNC ACTIVE</strong><br>
+        <span id="sync-status-msg">All changes sync to cloud in real-time. Open on any device to see live data.</span>
       </div>
 
       <div class="stitle">STEP 1 — CREATE FIREBASE PROJECT</div>
@@ -598,11 +1143,13 @@ input,select{font-size:16px !important;}
         <div class="inp-group"><label>AUTH DOMAIN</label><input id="fb-auth-domain" placeholder="risk-desk-xxxxx.firebaseapp.com"><div class="inp-hint">firebaseConfig.authDomain</div></div>
       </div>
       <div class="btn-row mb12">
-        <button class="btn btn-primary" onclick="saveFirebaseConfig()">SAVE & CONNECT</button>
+        <button class="btn btn-primary" onclick="saveFirebaseConfig()">SAVE &amp; CONNECT</button>
         <button class="btn btn-ghost" onclick="testFirebaseConnection()">TEST CONNECTION</button>
         <button class="btn btn-danger" onclick="clearFirebaseConfig()">CLEAR CONFIG</button>
       </div>
-      <div id="fb-connect-log" style="font-family:var(--mono);font-size:9px;color:var(--text3);min-height:20px;"></div>
+      <div id="fb-connect-log" style="font-family:var(--mono);font-size:9px;color:var(--text3);min-height:20px;">✓ Connected to Firebase! Setting up real-time listener...
+⏳ Cloud empty — pushing local data...
+✓ Local data pushed to cloud.</div>
     </div>
 
     <!-- Status + GitHub deploy card -->
@@ -612,19 +1159,19 @@ input,select{font-size:16px !important;}
         <div style="display:grid;gap:8px;">
           <div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg3);border:1px solid var(--border);">
             <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">FIREBASE</span>
-            <span id="fb-status-badge" class="badge badge-gray">NOT CONFIGURED</span>
+            <span id="fb-status-badge" class="badge badge-green">CONNECTED ✓</span>
           </div>
           <div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg3);border:1px solid var(--border);">
             <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">LAST SYNC</span>
-            <span id="fb-last-sync" style="font-family:var(--mono);font-size:10px;color:var(--text2);">—</span>
+            <span id="fb-last-sync" style="font-family:var(--mono);font-size:10px;color:var(--text2);">13:54:31</span>
           </div>
           <div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg3);border:1px solid var(--border);">
             <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">MODE</span>
-            <span id="fb-mode-badge" class="badge badge-gray">LOCAL ONLY</span>
+            <span id="fb-mode-badge" class="badge badge-green">CLOUD SYNC ON</span>
           </div>
           <div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg3);border:1px solid var(--border);">
             <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">RECORDS</span>
-            <span id="fb-records-count" style="font-family:var(--mono);font-size:10px;color:var(--text2);">—</span>
+            <span id="fb-records-count" style="font-family:var(--mono);font-size:10px;color:var(--text2);">3 positions · 12 stocks</span>
           </div>
         </div>
         <div class="btn-row mt8">
@@ -720,7 +1267,7 @@ input,select{font-size:16px !important;}
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">Firebase connected ✓ — sync active</div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -879,7 +1426,7 @@ let fbLastSync = null;
 function loadFirebaseConfig() {
   try { const r = localStorage.getItem(FB_CONFIG_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; }
 }
-function saveFirebaseConfig() {
+function saveFirebaseConfig() { try {
   const cfg = {
     apiKey:            el('fb-api-key').value.trim(),
     projectId:         el('fb-project-id').value.trim(),
@@ -895,6 +1442,7 @@ function saveFirebaseConfig() {
   localStorage.setItem(FB_CONFIG_KEY, JSON.stringify(cfg));
   toast('Firebase config saved — connecting...');
   initFirebase(cfg);
+  } catch(e) { toast('Error saving config: '+e.message, true); console.error(e); }
 }
 function clearFirebaseConfig() {
   if (!confirm('Remove Firebase config? App will work offline only.')) return;
@@ -933,11 +1481,9 @@ async function initFirebase(cfg) {
     // Push current local data to Firebase on first connect if cloud is empty
     const snap = await fbDatabase.ref('riskdesk/app').once('value');
     if (!snap.exists()) {
-      if (log) log.textContent += '
-⏳ Cloud empty — pushing local data...';
+      if (log) log.textContent += '\n⏳ Cloud empty — pushing local data...';
       await fbDatabase.ref('riskdesk/app').set(APP);
-      if (log) log.textContent += '
-✓ Local data pushed to cloud.';
+      if (log) log.textContent += '\n✓ Local data pushed to cloud.';
     }
   } catch(e) {
     fbConnected = false;
@@ -1016,7 +1562,7 @@ async function testFirebaseConnection() {
   await initFirebase(cfg);
 }
 
-function updateSyncUI() {
+function updateSyncUI() { try {
   const badge = el('fb-status-badge');
   const modeBadge = el('fb-mode-badge');
   const lastSync = el('fb-last-sync');
@@ -1032,25 +1578,26 @@ function updateSyncUI() {
     if (statusTitle) statusTitle.textContent = 'STATUS: CONNECTED — SYNC ACTIVE';
     if (statusMsg) statusMsg.textContent = 'All changes sync to cloud in real-time. Open on any device to see live data.';
   } else {
-    const cfg = loadFirebaseConfig();
-    if (badge) { badge.textContent = cfg ? 'CONFIG SAVED' : 'NOT CONFIGURED'; badge.className = cfg ? 'badge badge-orange' : 'badge badge-gray'; }
+    const cfgCheck = loadFirebaseConfig();
+    if (badge) { badge.textContent = cfgCheck ? 'CONFIG SAVED' : 'NOT CONFIGURED'; badge.className = cfgCheck ? 'badge badge-orange' : 'badge badge-gray'; }
     if (modeBadge) { modeBadge.textContent = 'LOCAL ONLY'; modeBadge.className = 'badge badge-gray'; }
-    if (navSync) { navSync.textContent = '☁ SYNC SETUP'; navSync.style.color = cfg ? 'var(--orange)' : 'var(--orange)'; }
+    if (navSync) { navSync.textContent = '☁ SYNC SETUP'; navSync.style.color = 'var(--orange)'; }
   }
   if (lastSync && fbLastSync) lastSync.textContent = fbLastSync.toLocaleTimeString('en-IN', {hour12:false});
   if (records && APP) {
     records.textContent = (APP.positions?.length||0) + ' positions · ' + (APP.equity?.length||0) + ' stocks';
   }
   // Load saved config into form if present
-  const cfg = loadFirebaseConfig();
-  if (cfg) {
+  const cfg2 = loadFirebaseConfig();
+  if (cfg2) {
     const fields = {
-      'fb-api-key': cfg.apiKey, 'fb-project-id': cfg.projectId,
-      'fb-db-url': cfg.databaseURL, 'fb-app-id': cfg.appId,
-      'fb-sender-id': cfg.messagingSenderId, 'fb-auth-domain': cfg.authDomain
+      'fb-api-key': cfg2.apiKey, 'fb-project-id': cfg2.projectId,
+      'fb-db-url': cfg2.databaseURL, 'fb-app-id': cfg2.appId,
+      'fb-sender-id': cfg2.messagingSenderId, 'fb-auth-domain': cfg2.authDomain
     };
     Object.entries(fields).forEach(([id, val]) => { const e = el(id); if(e && val) e.value = val; });
   }
+  } catch(e) { console.warn('updateSyncUI error:', e); }
 }
 
 function downloadConfiguredFile() {
@@ -1064,7 +1611,7 @@ function downloadConfiguredFile() {
   const src = document.documentElement.outerHTML;
   // Replace the FIREBASE_PRECONFIG placeholder with actual values
   const configured = src.replace(
-    'const FIREBASE_PRECONFIG = null;',
+    'const FIREBASE_PRECONFIG = {"apiKey":"AIzaSyBar6B4Tx0Jnl8bYzJ8DJafuZ4cVZag4iQ","projectId":"risk-desk","databaseURL":"https://risk-desk-default-rtdb.asia-southeast1.firebasedatabase.app","appId":"1:234434848357:web:a7893733d3c5626d30888c","messagingSenderId":"234434848357","authDomain":"risk-desk.firebaseapp.com"};',
     'const FIREBASE_PRECONFIG = ' + JSON.stringify(cfg) + ';'
   );
   const blob = new Blob([configured], {type: 'text/html'});
@@ -1312,15 +1859,22 @@ setInterval(tick,1000); tick();
 // PAGE
 // ═══════════════════════════════════════════════════════════════
 function switchPage(id) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  el('page-'+id).classList.add('active');
-  const tabs={dashboard:0,portfolio:1,equity:2,scenario:3,greeks:4,alerts:5,settings:6,sync:7};
-  const idx = tabs[id];
-  if (idx !== undefined) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
-  if(id==='settings'){loadSettingsForm();}
-  if(id==='greeks'){renderGreeksDeepDive();}
-  if(id==='sync'){updateSyncUI();}
+  try {
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    const pg = el('page-'+id);
+    if (!pg) { console.warn('No page found for id:', id); return; }
+    pg.classList.add('active');
+    // Find the tab by its onclick attribute — more robust than index
+    document.querySelectorAll('.nav-tab').forEach(t => {
+      if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'"+id+"'")) {
+        t.classList.add('active');
+      }
+    });
+    if(id==='settings'){loadSettingsForm();}
+    if(id==='greeks'){renderGreeksDeepDive();}
+    if(id==='sync'){try{updateSyncUI();}catch(e){console.warn('updateSyncUI error:',e);}}
+  } catch(e) { console.error('switchPage error:', e); }
 }
 
 function toast(msg,err=false) {
@@ -2162,5 +2716,6 @@ if ('serviceWorker' in navigator) {
     .catch(e => console.warn('SW registration failed (expected on file://):', e));
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
