@@ -1861,20 +1861,46 @@ let autoRefreshOn = false;
 
 // Uses allorigins CORS proxy → Yahoo Finance v8 quote API
 async function fetchYahooPrice(symbol) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
+  // Use range=5d to get 5 days of OHLC history — most reliable source for prevClose
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5d`;
   const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
   try {
-    const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+    const res = await fetch(proxy, { signal: AbortSignal.timeout(10000) });
     const data = await res.json();
-    const meta = data?.chart?.result?.[0]?.meta;
+    const result = data?.chart?.result?.[0];
+    const meta = result?.meta;
     if (!meta) return null;
-    return {
-      price: meta.regularMarketPrice || meta.previousClose,
-      prevClose: meta.previousClose,
-      change: (meta.regularMarketPrice - meta.previousClose),
-      changePct: ((meta.regularMarketPrice - meta.previousClose) / meta.previousClose * 100),
-      symbol
-    };
+
+    const livePrice = meta.regularMarketPrice || 0;
+
+    // Get historical daily closes — filter out nulls, take last two valid values
+    const closes = result?.indicators?.quote?.[0]?.close || [];
+    const timestamps = result?.timestamp || [];
+    const validCloses = closes
+      .map((c, i) => ({ c, t: timestamps[i] }))
+      .filter(x => x.c !== null && x.c !== undefined && x.c > 0);
+
+    // previousClose = second-to-last historical close (last completed trading day)
+    let prevClose = 0;
+    if (validCloses.length >= 2) {
+      prevClose = Math.round(validCloses[validCloses.length - 2].c * 100) / 100;
+    } else if (validCloses.length === 1) {
+      prevClose = Math.round(validCloses[0].c * 100) / 100;
+    }
+
+    // Fallback to meta fields if historical array failed
+    if (!prevClose) {
+      prevClose = meta.chartPreviousClose
+               || meta.previousClose
+               || meta.regularMarketPreviousClose
+               || 0;
+    }
+
+    const price = livePrice || prevClose; // outside hours, livePrice may be 0
+    const change = price - prevClose;
+    const changePct = prevClose ? (change / prevClose * 100) : 0;
+
+    return { price, prevClose, change, changePct, symbol };
   } catch(e) { return null; }
 }
 
