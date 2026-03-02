@@ -280,6 +280,16 @@ input,select{font-size:16px !important;}
       <div class="kpi-val kpi-sm" id="d-total-pnl" style="color:var(--yellow)">—</div>
       <div class="kpi-sub">Options + Equity</div>
     </div>
+    <div class="card card-green">
+      <div class="kpi-label">Day M2M ₹</div>
+      <div class="kpi-val kpi-sm" id="d-day-m2m">—</div>
+      <div class="kpi-sub" id="d-day-m2m-sub">F&O + Equity · today</div>
+    </div>
+    <div class="card card-accent">
+      <div class="kpi-label">Combined Delta Exp ₹</div>
+      <div class="kpi-val kpi-sm" id="d-combined-delta">—</div>
+      <div class="kpi-sub" id="d-combined-delta-pct">F&O delta + Equity delta</div>
+    </div>
   </div>
 
   <!-- EXPOSURE + VIX -->
@@ -452,7 +462,7 @@ input,select{font-size:16px !important;}
     <table class="tbl" id="eq-tbl">
       <thead><tr><th>#</th><th>STOCK</th><th>EXCH</th><th>L/S</th><th>QTY</th><th>AVG COST ₹</th><th>PREV CLOSE ₹</th><th>CMP ₹</th><th>BETA</th><th>INVESTED ₹</th><th>CURR VALUE ₹</th><th>DAY M2M ₹</th><th>P&L ₹</th><th>P&L%</th><th>DELTA ₹</th><th>BETA-ADJ ₹</th><th>SECTOR</th><th>ACT</th></tr></thead>
       <tbody id="eq-body"></tbody>
-      <tfoot><tr class="total-row"><td colspan="8">EQUITY TOTALS</td><td id="eq-t-inv">—</td><td id="eq-t-curr">—</td><td id="eq-t-pnl">—</td><td id="eq-t-pnlpct">—</td><td id="eq-t-delta">—</td><td id="eq-t-betadelta">—</td><td></td><td></td></tr></tfoot>
+      <tfoot><tr class="total-row"><td colspan="8">EQUITY TOTALS</td><td id="eq-t-inv">—</td><td id="eq-t-curr">—</td><td id="eq-t-m2m">—</td><td id="eq-t-pnl">—</td><td id="eq-t-pnlpct">—</td><td id="eq-t-delta">—</td><td id="eq-t-betadelta">—</td><td></td><td></td></tr></tfoot>
     </table>
     </div>
   </div>
@@ -634,9 +644,10 @@ input,select{font-size:16px !important;}
     <!-- Today per-position M2M -->
     <div class="card card-accent">
       <div class="stitle">TODAY'S M2M — PER POSITION</div>
-      <div class="alert-box info mb8" style="font-size:10px;">
-        M2M = (Today's LTP − Yesterday's closing LTP) × Net Qty.<br>
-        Snapshot taken automatically at <strong>3:30 PM IST</strong> daily. Update your LTPs before market close for accurate M2M.
+      <div class="alert-box ok mb8" style="font-size:10px;">
+        M2M = (Current LTP/CMP − Prev Close) × Net Qty.<br>
+        <strong>Equity:</strong> Prev Close auto-fetched from Yahoo Finance on every ⟳ FETCH LIVE.<br>
+        <strong>F&O:</strong> Enter Prev Close inline in Positions table, or click 📅 ROLL at EOD.
       </div>
       <table class="tbl" id="m2m-pos-tbl">
         <thead><tr>
@@ -2176,6 +2187,44 @@ function renderDashboard() {
   el('d-pnl-1pct').textContent='₹'+fmt(pnl1pct);
   el('d-pnl-1pct').className='kpi-val kpi-xs '+(pnl1pct>=0?'green':'red');
 
+  // Day M2M — sum from prevClose across all positions + equity
+  let totalDayM2M = 0; let m2mCount = 0;
+  APP.positions.forEach(p => {
+    const dir = p.bs==='Buy'?1:-1;
+    const qty = p.lotSize * p.lots * dir;
+    if (p.prevClose && p.ltp) { totalDayM2M += (p.ltp - p.prevClose)*qty; m2mCount++; }
+  });
+  let eqPrevVal = 0; let eqCurrVal = 0;
+  APP.equity.forEach(eq => {
+    if (eq.prevClose && eq.cmp) {
+      const dir = eq.dir==='Long'?1:-1;
+      totalDayM2M += (eq.cmp - eq.prevClose)*eq.qty*dir;
+      eqPrevVal += eq.prevClose * eq.qty;
+      eqCurrVal += eq.cmp * eq.qty;
+      m2mCount++;
+    }
+  });
+  const m2mPct = eqPrevVal > 0 ? (totalDayM2M / eqPrevVal * 100) : 0;
+  const dayM2mEl = el('d-day-m2m');
+  const dayM2mSubEl = el('d-day-m2m-sub');
+  if (dayM2mEl) {
+    if (m2mCount > 0) {
+      dayM2mEl.innerHTML = fmtPnl(totalDayM2M);
+      if (dayM2mSubEl) dayM2mSubEl.innerHTML = `<span class="${totalDayM2M>=0?'green':'red'}">${totalDayM2M>=0?'+':''}${m2mPct.toFixed(2)}%</span> · ${m2mCount} positions`;
+    } else {
+      dayM2mEl.textContent = '—';
+      if (dayM2mSubEl) dayM2mSubEl.textContent = 'Fetch Live to populate';
+    }
+  }
+
+  // Combined Delta Exposure = F&O delta ₹ + Equity beta-delta ₹
+  const combinedDelta = deltaExp + totalBetaDelta;
+  const combinedDeltaPct = nifty > 0 ? (combinedDelta / nifty * 100) : 0;
+  const cdEl = el('d-combined-delta');
+  const cdPctEl = el('d-combined-delta-pct');
+  if (cdEl) { cdEl.innerHTML = `<span class="${combinedDelta>=0?'green':'red'}">${combinedDelta>=0?'+':''}₹${fmt(Math.abs(combinedDelta))}</span>`; }
+  if (cdPctEl) { cdPctEl.innerHTML = `F&O: ₹${fmt(deltaExp)} · Eq: ₹${fmt(totalBetaDelta)}<br><span class="${combinedDelta>=0?'green':'red'}">${combinedDelta>=0?'+':''}${combinedDeltaPct.toFixed(2)}% of Nifty</span>`; }
+
   // DTE
   const dte=S.dte||40;
   el('d-dte').textContent=dte+' days';
@@ -2382,6 +2431,25 @@ function renderEquity() {
       </td>
     </tr>`;
   });
+  // Compute total Day M2M for equity
+  let totDayM2M = 0; let totPrevVal = 0; let m2mRows = 0;
+  APP.equity.forEach(eq => {
+    if (eq.prevClose && eq.cmp) {
+      const d = eq.dir==='Long'?1:-1;
+      totDayM2M += (eq.cmp - eq.prevClose)*eq.qty*d;
+      totPrevVal += eq.prevClose * eq.qty;
+      m2mRows++;
+    }
+  });
+  const eqM2mPct = totPrevVal > 0 ? (totDayM2M / totPrevVal * 100) : 0;
+  const m2mEl = el('eq-t-m2m');
+  if (m2mEl) {
+    if (m2mRows > 0) {
+      m2mEl.innerHTML = fmtPnl(totDayM2M) + `<br><span style="font-size:9px;">${totDayM2M>=0?'+':''}${eqM2mPct.toFixed(2)}%</span>`;
+    } else {
+      m2mEl.textContent = '—';
+    }
+  }
   el('eq-t-inv').textContent='₹'+fmt(totInv);
   el('eq-t-curr').textContent='₹'+fmt(totCurr);
   el('eq-t-pnl').innerHTML=fmtPnl(totPnl);
