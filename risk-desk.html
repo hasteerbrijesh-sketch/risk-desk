@@ -366,6 +366,7 @@ input,select{font-size:16px !important;}
       <button class="btn btn-primary" onclick="openModal('opt')">+ ADD POSITION</button>
       <button class="btn btn-ghost" onclick="clearAllPositions()">✕ CLEAR ALL</button>
       <button class="btn btn-green" style="padding:5px 10px;font-size:9px;" onclick="fetchLivePrices()">⟳ REFRESH GREEKS</button>
+      <button class="btn btn-ghost" style="padding:5px 10px;font-size:9px;" onclick="rollPrevClose()" title="Options/Futures: copies LTP → Prev Close at EOD. Equity: auto-updated from Yahoo Finance on every Fetch Live.">📅 ROLL OPT/FUT PREV CLOSE</button>
       <div id="greeks-live-status" style="font-family:var(--mono);font-size:9px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <span style="color:var(--text3);">Greeks use →</span>
         <span id="greeks-spot-badge" class="badge badge-blue">SPOT: —</span>
@@ -375,9 +376,9 @@ input,select{font-size:16px !important;}
     </div>
     <div style="overflow-x:auto;">
     <table class="tbl" id="opt-tbl">
-      <thead><tr><th>#</th><th>INST</th><th>TYPE</th><th>B/S</th><th>ENTRY SPOT</th><th>STRIKE</th><th title="⚡ Using live VIX when VIX mode ON. Entry IV shown when OFF.">IV% ⚡</th><th title="Auto-calculated daily from expiry date. No manual update needed.">DTE 🗓</th><th>LOT</th><th>LOTS</th><th>NET QTY</th><th>TRADE PRICE ₹</th><th>CURR LTP ₹</th><th title="Recalculates every 1min (market hours) using live Nifty spot + VIX">BS DELTA ↻</th><th>BS GAMMA</th><th>BS THETA/DAY</th><th>BS VEGA</th><th>P&L ₹</th><th>NOTES</th><th>ACT</th></tr></thead>
+      <thead><tr><th>#</th><th>INST</th><th>TYPE</th><th>B/S</th><th>ENTRY SPOT</th><th>STRIKE</th><th title="⚡ Using live VIX when VIX mode ON. Entry IV shown when OFF.">IV% ⚡</th><th title="Auto-calculated daily from expiry date. No manual update needed.">DTE 🗓</th><th>LOT</th><th>LOTS</th><th>NET QTY</th><th>TRADE PRICE ₹</th><th>PREV CLOSE ₹</th><th>CURR LTP ₹</th><th title="Recalculates every 1min (market hours) using live Nifty spot + VIX">BS DELTA ↻</th><th>BS GAMMA</th><th>BS THETA/DAY</th><th>BS VEGA</th><th>DAY M2M ₹</th><th>P&L ₹</th><th>NOTES</th><th>ACT</th></tr></thead>
       <tbody id="opt-body"></tbody>
-      <tfoot><tr class="total-row" id="opt-total"><td colspan="17" style="text-align:right;">PORTFOLIO TOTALS →</td><td id="opt-total-pnl">—</td><td></td><td></td></tr></tfoot>
+      <tfoot><tr class="total-row" id="opt-total"><td colspan="17" style="text-align:right;">PORTFOLIO TOTALS →</td><td id="opt-total-m2m">—</td><td id="opt-total-pnl">—</td><td></td><td></td></tr></tfoot>
     </table>
     </div>
   </div>
@@ -449,7 +450,7 @@ input,select{font-size:16px !important;}
     </div>
     <div style="overflow-x:auto;">
     <table class="tbl" id="eq-tbl">
-      <thead><tr><th>#</th><th>STOCK</th><th>EXCH</th><th>L/S</th><th>QTY</th><th>AVG COST ₹</th><th>CMP ₹</th><th>BETA</th><th>INVESTED ₹</th><th>CURR VALUE ₹</th><th>P&L ₹</th><th>P&L%</th><th>DELTA ₹</th><th>BETA-ADJ ₹</th><th>SECTOR</th><th>ACT</th></tr></thead>
+      <thead><tr><th>#</th><th>STOCK</th><th>EXCH</th><th>L/S</th><th>QTY</th><th>AVG COST ₹</th><th>PREV CLOSE ₹</th><th>CMP ₹</th><th>BETA</th><th>INVESTED ₹</th><th>CURR VALUE ₹</th><th>DAY M2M ₹</th><th>P&L ₹</th><th>P&L%</th><th>DELTA ₹</th><th>BETA-ADJ ₹</th><th>SECTOR</th><th>ACT</th></tr></thead>
       <tbody id="eq-body"></tbody>
       <tfoot><tr class="total-row"><td colspan="8">EQUITY TOTALS</td><td id="eq-t-inv">—</td><td id="eq-t-curr">—</td><td id="eq-t-pnl">—</td><td id="eq-t-pnlpct">—</td><td id="eq-t-delta">—</td><td id="eq-t-betadelta">—</td><td></td><td></td></tr></tfoot>
     </table>
@@ -829,6 +830,7 @@ input,select{font-size:16px !important;}
       <div class="inp-group"><label>LOT SIZE</label><input id="f-lotsize" type="number" value="75"></div>
       <div class="inp-group"><label>NUMBER OF LOTS</label><input id="f-lots" type="number" value="1"></div>
       <div class="inp-group"><label>TRADE PRICE ₹ (actual)</label><input id="f-tradeprice" type="number" step="0.05"></div>
+      <div class="inp-group"><label>PREV CLOSE ₹</label><input id="f-prevclose" type="number" step="0.05"><div class="inp-hint">Yesterday's closing price for day M2M</div></div>
       <div class="inp-group"><label>CURRENT LTP ₹</label><input id="f-ltp" type="number" step="0.05"></div>
       <div class="inp-group" style="grid-column:span 2;"><label>NOTES</label><input id="f-notes"></div>
     </div>
@@ -850,6 +852,7 @@ input,select{font-size:16px !important;}
       <div class="inp-group"><label>LONG / SHORT</label><select id="ef-dir"><option>Long</option><option>Short</option></select></div>
       <div class="inp-group"><label>QUANTITY</label><input id="ef-qty" type="number"></div>
       <div class="inp-group"><label>AVG COST ₹</label><input id="ef-cost" type="number" step="0.01"></div>
+      <div class="inp-group"><label>PREV CLOSE ₹</label><input id="ef-prevclose" type="number" step="0.01"><div class="inp-hint">Yesterday's closing price for day M2M</div></div>
       <div class="inp-group"><label>CMP ₹ (live)</label><input id="ef-cmp" type="number" step="0.01"></div>
       <div class="inp-group"><label>BETA</label><input id="ef-beta" type="number" step="0.01" value="1"></div>
       <div class="inp-group"><label>SECTOR</label><input id="ef-sector"></div>
@@ -1255,6 +1258,18 @@ if (!APP.settings.defaultExpiry) APP.settings.defaultExpiry = '2026-03-26';
 APP.positions.forEach(p => { if (!p.expiry) p.expiry = APP.settings.defaultExpiry; });
 
 
+
+
+// ROLL PREV CLOSE — copies current LTP → prevClose for options/futures
+// Equity prevClose is auto-fetched from Yahoo Finance on every Fetch Live
+// Run this for options/futures at EOD (3:30 PM)
+function rollPrevClose() {
+  if (!confirm('Copy current LTPs to Prev Close for ALL options/futures?\nEquity prevClose is already auto-updated by Yahoo Finance fetch.\nDo this at end of day (3:30 PM).')) return;
+  APP.positions.forEach(p => { if (p.ltp) p.prevClose = p.ltp; });
+  saveState();
+  renderAll();
+  toast('Options/Futures Prev Close rolled ✓ — Equity auto-updated by Yahoo');
+}
 
 // ═══════════════════════════════════════════════════════════════
 // POSITION SIZING CALCULATOR
@@ -1874,6 +1889,7 @@ async function fetchLivePrices() {
   // Nifty
   const niftyData = await fetchYahooPrice('^NSEI');
   if (niftyData?.price) {
+    if (niftyData.prevClose) APP.settings.niftyPrevClose = Math.round(niftyData.prevClose * 100) / 100;
     APP.settings.nifty = Math.round(niftyData.price * 100) / 100;
     fetchResults.push({ sym:'NIFTY', ...niftyData });
     updated++;
@@ -1892,6 +1908,8 @@ async function fetchLivePrices() {
     if (!eq.yahoo) continue;
     const d = await fetchYahooPrice(eq.yahoo);
     if (d?.price) {
+      // Auto-update prevClose from Yahoo previousClose
+      if (d.prevClose) eq.prevClose = Math.round(d.prevClose * 100) / 100;
       eq.cmp = Math.round(d.price * 100) / 100;
       fetchResults.push({ sym: eq.stock, ...d });
       updated++;
@@ -2250,6 +2268,7 @@ function renderPositions() {
     const g=calcBS(p);
     netDelta+=g.netDelta; netGamma+=g.netGamma; netTheta+=g.netTheta; netVega+=g.netVega;
 
+    const dayM2M = (p.prevClose && p.ltp) ? (p.ltp - p.prevClose) * netQty : null;
     body.innerHTML+=`<tr>
       <td class="mono">${idx+1}</td>
       <td class="bold">${p.inst}</td><td>${p.type}</td>
@@ -2261,11 +2280,18 @@ function renderPositions() {
       <td class="mono">${p.lotSize}</td><td class="mono">${p.lots}</td>
       <td class="mono bold ${netQty>0?'green':'orange'}">${netQty}</td>
       <td class="mono">₹${fmt(p.tradePrice,2)}</td>
+      <td class="mono">
+        <input type="number" step="0.05" value="${p.prevClose||''}" placeholder="—"
+          style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;padding:2px 5px;width:75px;"
+          title="Prev Close — edit inline"
+          onchange="APP.positions[${idx}].prevClose=+this.value;saveState();renderPositions();">
+      </td>
       <td class="mono accent">₹${fmt(p.ltp,2)}</td>
       <td class="mono ${g.netDelta>=0?'green':'red'}">${fmt(g.netDelta,3)}</td>
       <td class="mono ${g.netGamma>=0?'green':'red'}">${fmt(g.netGamma,5)}</td>
       <td class="mono ${g.netTheta>=0?'green':'red'}">₹${fmt(g.netTheta,0)}</td>
       <td class="mono ${g.netVega>=0?'green':'red'}">₹${fmt(g.netVega,0)}</td>
+      <td class="mono">${fmtPnl(dayM2M)}</td>
       <td class="mono">${fmtPnl(pnl)}</td>
       <td style="font-size:10px;color:var(--text3);">${p.notes||''}</td>
       <td>
@@ -2275,6 +2301,15 @@ function renderPositions() {
     </tr>`;
   });
 
+  // Sum day M2M across all positions
+  let totalDayM2M = 0; let hasDayM2M = false;
+  APP.positions.forEach(p => {
+    const dir2 = p.bs==='Buy'?1:-1;
+    const qty2 = p.lotSize*p.lots*dir2;
+    if (p.prevClose && p.ltp) { totalDayM2M += (p.ltp - p.prevClose)*qty2; hasDayM2M=true; }
+  });
+  const m2mEl = el('opt-total-m2m');
+  if(m2mEl) m2mEl.innerHTML = hasDayM2M ? fmtPnl(totalDayM2M) : '—';
   el('opt-total-pnl').innerHTML=fmtPnl(totalPnl);
   el('p-delta').textContent=fmt(netDelta,3);
   el('p-theta').textContent='₹'+fmt(netTheta,0);
@@ -2291,16 +2326,25 @@ function renderEquity() {
   APP.equity.forEach((eq,idx)=>{
     const r=calcEquity(eq);
     totInv+=r.invested;totCurr+=r.currVal;totPnl+=r.pnl;totDelta+=r.delta;totBeta+=r.betaDelta;
+    const dir = eq.dir==='Long'?1:-1;
+    const eqDayM2M = (eq.prevClose && eq.cmp) ? (eq.cmp - eq.prevClose) * eq.qty * dir : null;
     body.innerHTML+=`<tr>
       <td class="mono">${idx+1}</td><td class="bold">${eq.stock}</td>
       <td style="font-size:10px;">${eq.exch}</td>
       <td>${chip(eq.dir,eq.dir==='Long'?'green':'red')}</td>
       <td class="mono">${fmt(eq.qty)}</td>
       <td class="mono">₹${fmt(eq.cost,2)}</td>
+      <td class="mono">
+        <input type="number" step="0.01" value="${eq.prevClose||''}" placeholder="—"
+          style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;padding:2px 5px;width:75px;"
+          title="Prev Close — edit inline"
+          onchange="APP.equity[${idx}].prevClose=+this.value;saveState();renderEquity();">
+      </td>
       <td class="mono accent">₹${fmt(eq.cmp,2)}</td>
       <td class="mono">${eq.beta}</td>
       <td class="mono">₹${fmt(r.invested)}</td>
       <td class="mono">₹${fmt(r.currVal)}</td>
+      <td class="mono">${fmtPnl(eqDayM2M)}</td>
       <td class="mono">${fmtPnl(r.pnl)}</td>
       <td class="mono">${fmtPct(r.pnlPct)}</td>
       <td class="mono">₹${fmt(r.delta)}</td>
@@ -2730,6 +2774,7 @@ function openModal(type) {
     el('f-lotsize').value=65;
     el('f-lots').value=1;
     el('f-tradeprice').value='';
+    el('f-prevclose').value='';
     el('f-ltp').value='';
     el('f-notes').value='';
     el('modal-title-opt').textContent='ADD NEW OPTION OR FUTURE';
@@ -2739,6 +2784,7 @@ function openModal(type) {
     el('ef-stock').value=''; el('ef-yahoo').value='';
     el('ef-exch').value='NSE'; el('ef-dir').value='Long';
     el('ef-qty').value=''; el('ef-cost').value='';
+    el('ef-prevclose').value='';
     el('ef-cmp').value=''; el('ef-beta').value=1;
     el('ef-sector').value=''; el('ef-notes').value='';
     el('modal-title-eq').textContent='ADD NEW EQUITY POSITION';
@@ -2756,7 +2802,9 @@ function savePosition() {
     iv:+el('f-iv').value||null, dte:+el('f-dte').value,
     expiry:el('f-expiry').value||(APP.settings.defaultExpiry||'2026-03-26'),
     lotSize:+el('f-lotsize').value, lots:+el('f-lots').value,
-    tradePrice:+el('f-tradeprice').value, ltp:+el('f-ltp').value,
+    tradePrice:+el('f-tradeprice').value,
+    prevClose:+el('f-prevclose').value||null,
+    ltp:+el('f-ltp').value,
     notes:el('f-notes').value,
   };
   if(idx!=='') APP.positions[+idx]=pos; else APP.positions.push(pos);
@@ -2780,6 +2828,7 @@ function editPosition(idx) {
   el('f-lotsize').value=p.lotSize;
   el('f-lots').value=p.lots;
   el('f-tradeprice').value=p.tradePrice!==null&&p.tradePrice!==undefined?p.tradePrice:'';
+  el('f-prevclose').value=p.prevClose!==null&&p.prevClose!==undefined?p.prevClose:'';
   el('f-ltp').value=p.ltp!==null&&p.ltp!==undefined?p.ltp:'';
   el('f-notes').value=p.notes||'';
   // Update modal title to show it's an edit
@@ -2795,7 +2844,9 @@ function saveEquity() {
   const eq={
     stock:el('ef-stock').value, yahoo:el('ef-yahoo').value, exch:el('ef-exch').value,
     dir:el('ef-dir').value, qty:+el('ef-qty').value,
-    cost:+el('ef-cost').value, cmp:+el('ef-cmp').value,
+    cost:+el('ef-cost').value,
+    prevClose:+el('ef-prevclose').value||null,
+    cmp:+el('ef-cmp').value,
     beta:+el('ef-beta').value||1, sector:el('ef-sector').value, notes:el('ef-notes').value,
   };
   if(idx!=='') APP.equity[+idx]=eq; else APP.equity.push(eq);
@@ -2811,6 +2862,7 @@ function editEquity(idx){
   el('ef-dir').value=eq.dir;
   el('ef-qty').value=eq.qty;
   el('ef-cost').value=eq.cost;
+  el('ef-prevclose').value=eq.prevClose!==null&&eq.prevClose!==undefined?eq.prevClose:'';
   el('ef-cmp').value=eq.cmp!==null&&eq.cmp!==undefined?eq.cmp:'';
   el('ef-beta').value=eq.beta!==null&&eq.beta!==undefined?eq.beta:1;
   el('ef-sector').value=eq.sector||'';
